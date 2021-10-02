@@ -1,0 +1,73 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>CreateRoomRequestHandler.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">EUN-app-api</a> &gt; <a href="index.source.html" class="el_package">org.youngmonkeys.eun.app.controller.handler</a> &gt; <span class="el_source">CreateRoomRequestHandler.java</span></div><h1>CreateRoomRequestHandler.java</h1><pre class="source lang-java linenums">package org.youngmonkeys.eun.app.controller.handler;
+
+import com.tvd12.ezyfox.bean.annotation.EzySingleton;
+import com.tvd12.ezyfoxserver.entity.EzyUser;
+import lombok.NonNull;
+import lombok.var;
+import org.youngmonkeys.eun.app.controller.handler.base.RoomRequestHandler;
+import org.youngmonkeys.eun.app.entity.Room;
+import org.youngmonkeys.eun.app.request.CreateRoomOperationRequest;
+import org.youngmonkeys.eun.app.request.OperationRequest;
+import org.youngmonkeys.eun.app.response.OperationResponse;
+import org.youngmonkeys.eun.common.constant.*;
+import org.youngmonkeys.eun.common.entity.CustomHashtable;
+import org.youngmonkeys.eun.common.entity.RoomOption;
+
+import java.util.Vector;
+
+@EzySingleton
+<span class="nc" id="L19">public class CreateRoomRequestHandler extends RoomRequestHandler {</span>
+    @Override
+    public Integer getCode() {
+<span class="nc" id="L22">        return OperationCode.CreateRoom;</span>
+    }
+
+    @Override
+<span class="nc bnc" id="L26" title="All 4 branches missed.">    public OperationResponse handle(@NonNull EzyUser peer, @NonNull OperationRequest operationRequest) {</span>
+<span class="nc" id="L27">        var request = requestConverterService.createOperationRequest(operationRequest, CreateRoomOperationRequest.class);</span>
+<span class="nc bnc" id="L28" title="All 4 branches missed.">        if (request == null || !request.isValidRequest()) {</span>
+<span class="nc" id="L29">            return newInvalidRequestParameters(operationRequest);</span>
+        }
+
+<span class="nc" id="L32">        var currentLobby = getCurrentLobbyPeer(peer);</span>
+
+<span class="nc" id="L34">        var response = new OperationResponse(operationRequest);</span>
+
+<span class="nc bnc" id="L36" title="All 2 branches missed.">        if (getCurrentRoomPeer(peer) != null) {</span>
+<span class="nc" id="L37">            response.setReturnCode(ReturnCode.UserInRoom);</span>
+<span class="nc" id="L38">            return response;</span>
+        }
+
+<span class="nc" id="L41">        var roomId = currentLobby.getRandomRoomId();</span>
+<span class="nc bnc" id="L42" title="All 2 branches missed.">        if (roomId == -1) {</span>
+<span class="nc" id="L43">            response.setReturnCode(ReturnCode.LobbyFull);</span>
+<span class="nc" id="L44">            return response;</span>
+        }
+
+<span class="nc" id="L47">        var roomOption = new RoomOption();</span>
+
+<span class="nc bnc" id="L49" title="All 2 branches missed.">        var customRoomProperties = request.getCustomRoomProperties() != null ? request.getCustomRoomProperties() : new CustomHashtable();</span>
+<span class="nc bnc" id="L50" title="All 2 branches missed.">        var customRoomPropertiesForLobby = request.getCustomRoomPropertiesForLobby() != null ? request.getCustomRoomPropertiesForLobby() : new Vector&lt;Integer&gt;();</span>
+
+<span class="nc" id="L52">        roomOption.setCustomRoomProperties(customRoomProperties);</span>
+<span class="nc" id="L53">        roomOption.setCustomRoomPropertiesForLobby(customRoomPropertiesForLobby);</span>
+<span class="nc" id="L54">        roomOption.setMaxPlayer(request.getMaxPlayer());</span>
+<span class="nc" id="L55">        roomOption.setOpen(request.isOpen());</span>
+<span class="nc" id="L56">        roomOption.setVisible(request.isVisible());</span>
+<span class="nc" id="L57">        roomOption.setPassword(request.getPassword());</span>
+<span class="nc bnc" id="L58" title="All 2 branches missed.">        roomOption.setTtl(request.getTtl() &lt; 0 ? 0 : request.getTtl());</span>
+
+<span class="nc" id="L60">        var room = new Room(roomId, roomOption, currentLobby, userService);</span>
+<span class="nc" id="L61">        currentLobby.addRoom(room);</span>
+
+<span class="nc" id="L63">        var joined = room.joinRoom(peer);</span>
+<span class="nc bnc" id="L64" title="All 2 branches missed.">        if (!joined) {</span>
+<span class="nc" id="L65">            response.setReturnCode(ReturnCode.NotOk);</span>
+<span class="nc" id="L66">            return response;</span>
+        }
+
+<span class="nc" id="L69">        response.setReturnCode(ReturnCode.Ok);</span>
+<span class="nc" id="L70">        return response;</span>
+    }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.4.201905082037</span></div></body></html>

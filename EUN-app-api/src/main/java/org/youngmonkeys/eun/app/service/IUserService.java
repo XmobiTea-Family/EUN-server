@@ -1,0 +1,30 @@
+package org.youngmonkeys.eun.app.service;
+
+import com.tvd12.ezyfoxserver.entity.EzyUser;
+import lombok.NonNull;
+import org.youngmonkeys.eun.app.event.OperationEvent;
+import org.youngmonkeys.eun.app.response.OperationResponse;
+
+import java.util.Iterator;
+
+public interface IUserService {
+    boolean containsPeer(@NonNull String userId);
+
+    EzyUser getPeer(@NonNull String userId);
+
+    void sendOperationResponse(@NonNull EzyUser peer, @NonNull OperationResponse response);
+
+    void sendEvent(@NonNull String userId, @NonNull OperationEvent event);
+
+    void sendEvent(@NonNull EzyUser peer, @NonNull OperationEvent event);
+
+    void sendEventToSomePeer(@NonNull Iterable<EzyUser> peerLst, @NonNull OperationEvent event);
+
+    void sendEventToSomePeer(@NonNull Iterator<EzyUser> peerIterator, @NonNull OperationEvent event);
+
+    void sendEventToSomePeerByUserIds(@NonNull Iterable<String> peerUserIdLst, @NonNull OperationEvent event);
+
+    void sendEventToSomePeerByUserIds(@NonNull Iterator<String> peerUserIdIterator, @NonNull OperationEvent event);
+
+    void sendEventToAllOnlinePeer(@NonNull OperationEvent event);
+}

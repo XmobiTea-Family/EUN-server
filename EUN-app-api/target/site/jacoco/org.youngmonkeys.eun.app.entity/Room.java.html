@@ -1,0 +1,736 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>Room.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">EUN-app-api</a> &gt; <a href="index.source.html" class="el_package">org.youngmonkeys.eun.app.entity</a> &gt; <span class="el_source">Room.java</span></div><h1>Room.java</h1><pre class="source lang-java linenums">package org.youngmonkeys.eun.app.entity;
+
+import com.tvd12.ezyfox.io.EzyStrings;
+import com.tvd12.ezyfoxserver.entity.EzyUser;
+import lombok.NonNull;
+import lombok.var;
+import org.youngmonkeys.eun.app.event.OperationEvent;
+import org.youngmonkeys.eun.app.service.IUserService;
+import org.youngmonkeys.eun.common.constant.EventCode;
+import org.youngmonkeys.eun.common.constant.ParameterCode;
+import org.youngmonkeys.eun.common.constant.PeerPropertyCode;
+import org.youngmonkeys.eun.common.entity.CustomHashtable;
+import org.youngmonkeys.eun.common.entity.RoomGameObject;
+import org.youngmonkeys.eun.common.entity.RoomOption;
+import org.youngmonkeys.eun.common.entity.RoomPlayer;
+
+import java.util.*;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+
+public class Room implements IRoom {
+    int ttl;
+    int currentPlayerId;
+    int roomId;
+    List&lt;RoomPlayer&gt; roomPlayerLst;
+    String leaderClientUserId;
+    int maxPlayer;
+    CustomHashtable customRoomProperties;
+    List&lt;Integer&gt; customRoomPropertiesForLobby;
+    boolean isVisible;
+    boolean isOpen;
+    long tsCreate;
+    String password;
+    ILobby lobby;
+
+    HashMap&lt;Integer, RoomGameObject&gt; gameObjectDic;
+
+    ExecutorService threadPool;
+
+    IUserService userService;
+
+    @Override
+    public int getRoomId() {
+<span class="nc" id="L44">        return roomId;</span>
+    }
+
+    @Override
+    public Iterator&lt;RoomPlayer&gt; getRoomPlayerLst() {
+<span class="nc" id="L49">        return roomPlayerLst.iterator();</span>
+    }
+
+    @Override
+    public int getPlayerCount() {
+<span class="nc" id="L54">        return roomPlayerLst.size();</span>
+    }
+
+    @Override
+    public int getMaxPlayer() {
+<span class="nc" id="L59">        return maxPlayer;</span>
+    }
+
+    @Override
+    public CustomHashtable getCustomRoomProperties() {
+<span class="nc" id="L64">        return customRoomProperties;</span>
+    }
+
+    @Override
+    public Iterator&lt;Integer&gt; getCustomRoomPropertiesForLobby() {
+<span class="nc" id="L69">        return customRoomPropertiesForLobby.iterator();</span>
+    }
+
+    @Override
+    public boolean joinRoom(EzyUser peer) {
+<span class="nc bnc" id="L74" title="All 2 branches missed.">        if (!isOpen) return false;</span>
+<span class="nc bnc" id="L75" title="All 2 branches missed.">        if (roomPlayerLst.size() &gt;= maxPlayer) return false;</span>
+
+        RoomPlayer roomPlayer;
+
+<span class="nc" id="L79">        var userId = peer.getName();</span>
+<span class="nc" id="L80">        var roomPlayerOption = roomPlayerLst.stream().filter(x -&gt; x.getUserId().equals(userId)).findAny();</span>
+
+<span class="nc bnc" id="L82" title="All 2 branches missed.">        if (!roomPlayerOption.isPresent()) {</span>
+<span class="nc" id="L83">            roomPlayer = new RoomPlayer(currentPlayerId++, userId, new CustomHashtable());</span>
+<span class="nc" id="L84">            roomPlayerLst.add(roomPlayer);</span>
+
+<span class="nc" id="L86">            threadPool.execute(() -&gt; {</span>
+<span class="nc" id="L87">                var onPlayerJoinRoomEvent = new OperationEvent(EventCode.OnPlayerJoinRoom);</span>
+<span class="nc" id="L88">                var playerJoinRoomParameters = new CustomHashtable();</span>
+<span class="nc" id="L89">                playerJoinRoomParameters.put(ParameterCode.Data, roomPlayer.toData());</span>
+<span class="nc" id="L90">                onPlayerJoinRoomEvent.setParameters(playerJoinRoomParameters);</span>
+
+<span class="nc" id="L92">                userService.sendEventToSomePeerByUserIds(getUserIdIterator(roomPlayer.getPlayerId()), onPlayerJoinRoomEvent);</span>
+<span class="nc" id="L93">            });</span>
+        }
+<span class="nc" id="L95">        else roomPlayer = roomPlayerOption.get();</span>
+
+<span class="nc" id="L97">        peer.setProperty(PeerPropertyCode.Room, this);</span>
+<span class="nc" id="L98">        peer.setProperty(PeerPropertyCode.RoomPlayer, roomPlayer);</span>
+
+<span class="nc" id="L100">        threadPool.execute(() -&gt; {</span>
+<span class="nc" id="L101">            var onJoinRoomEvent = new OperationEvent(EventCode.OnJoinRoom);</span>
+<span class="nc" id="L102">            var joinRoomParameters = new CustomHashtable();</span>
+<span class="nc" id="L103">            joinRoomParameters.put(ParameterCode.Data, toFullData());</span>
+<span class="nc" id="L104">            onJoinRoomEvent.setParameters(joinRoomParameters);</span>
+
+<span class="nc" id="L106">            userService.sendEvent(peer, onJoinRoomEvent);</span>
+<span class="nc" id="L107">        });</span>
+
+<span class="nc bnc" id="L109" title="All 2 branches missed.">        if (isLeaderClientNotFound()) {</span>
+<span class="nc" id="L110">            changeLeaderClient(roomPlayer.getPlayerId());</span>
+        }
+
+<span class="nc" id="L113">        return true;</span>
+    }
+
+    @Override
+    public boolean leaveRoom(EzyUser peer) {
+<span class="nc" id="L118">        var userId = peer.getName();</span>
+
+<span class="nc" id="L120">        return leaveRoomBecauseTimeoutReconnect(userId);</span>
+    }
+
+    @Override
+    public boolean leaveRoomBecauseTimeoutReconnect(String userId) {
+<span class="nc" id="L125">        var roomPlayerOption = roomPlayerLst.stream().filter(x -&gt; x.getUserId().equals(userId)).findAny();</span>
+<span class="nc bnc" id="L126" title="All 2 branches missed.">        if (!roomPlayerOption.isPresent()) {</span>
+<span class="nc" id="L127">            return false;</span>
+        }
+
+<span class="nc" id="L130">        var peer = userService.getPeer(userId);</span>
+
+<span class="nc" id="L132">        var roomPlayer = roomPlayerOption.get();</span>
+<span class="nc" id="L133">        var removed = roomPlayerLst.remove(roomPlayer);</span>
+<span class="nc bnc" id="L134" title="All 2 branches missed.">        if (!removed) return false;</span>
+        else {
+<span class="nc bnc" id="L136" title="All 2 branches missed.">            if (peer != null) {</span>
+<span class="nc" id="L137">                peer.removeProperty(PeerPropertyCode.Room);</span>
+<span class="nc" id="L138">                peer.removeProperty(PeerPropertyCode.RoomPlayer);</span>
+
+<span class="nc" id="L140">                threadPool.execute(() -&gt; {</span>
+<span class="nc" id="L141">                    var onPlayerJoinRoomEvent = new OperationEvent(EventCode.OnLeftRoom);</span>
+<span class="nc" id="L142">                    userService.sendEvent(peer, onPlayerJoinRoomEvent);</span>
+<span class="nc" id="L143">                });</span>
+            }
+        }
+
+<span class="nc" id="L147">        threadPool.execute(() -&gt; {</span>
+<span class="nc" id="L148">            var onPlayerLeftRoomEvent = new OperationEvent(EventCode.OnPlayerLeftRoom);</span>
+<span class="nc" id="L149">            var playerLeftRoomParameters = new CustomHashtable();</span>
+<span class="nc" id="L150">            playerLeftRoomParameters.put(ParameterCode.Data, roomPlayer.toData());</span>
+<span class="nc" id="L151">            onPlayerLeftRoomEvent.setParameters(playerLeftRoomParameters);</span>
+
+<span class="nc" id="L153">            userService.sendEventToSomePeerByUserIds(getUserIdIterator(roomPlayer.getPlayerId()), onPlayerLeftRoomEvent);</span>
+<span class="nc" id="L154">        });</span>
+
+<span class="nc bnc" id="L156" title="All 2 branches missed.">        if (roomPlayerLst.size() &lt;= 0) {</span>
+            // trong phong khong con ai nua
+<span class="nc" id="L158">            lobby.removeRoom(this);</span>
+        } else {
+<span class="nc bnc" id="L160" title="All 2 branches missed.">            if (leaderClientUserId.equals(userId)) {</span>
+<span class="nc" id="L161">                var newLeaderClientPlayerId = -1;</span>
+
+<span class="nc bnc" id="L163" title="All 2 branches missed.">                for (var cRoomPlayer : roomPlayerLst) {</span>
+<span class="nc bnc" id="L164" title="All 4 branches missed.">                    if (cRoomPlayer.getPlayerId() != roomPlayer.getPlayerId() &amp;&amp; userService.containsPeer(cRoomPlayer.getUserId()))</span>
+<span class="nc" id="L165">                        newLeaderClientPlayerId = cRoomPlayer.getPlayerId();</span>
+                    break;
+                }
+
+<span class="nc bnc" id="L169" title="All 2 branches missed.">                if (newLeaderClientPlayerId == -1) lobby.removeRoom(this);</span>
+<span class="nc" id="L170">                else changeLeaderClient(newLeaderClientPlayerId);</span>
+            }
+        }
+
+<span class="nc" id="L174">        return true;</span>
+    }
+
+    @Override
+    public void disconnectRoom(EzyUser peer) {
+<span class="nc" id="L179">        var userId = peer.getName();</span>
+
+<span class="nc" id="L181">        var roomPlayer = peer.getProperty(PeerPropertyCode.RoomPlayer, RoomPlayer.class);</span>
+
+<span class="nc bnc" id="L183" title="All 2 branches missed.">        if (leaderClientUserId.equals(userId)) {</span>
+<span class="nc" id="L184">            var newLeaderClientPlayerId = -1;</span>
+
+<span class="nc bnc" id="L186" title="All 2 branches missed.">            for (var cRoomPlayer : roomPlayerLst) {</span>
+<span class="nc bnc" id="L187" title="All 4 branches missed.">                if (cRoomPlayer.getPlayerId() != roomPlayer.getPlayerId() &amp;&amp; userService.containsPeer(cRoomPlayer.getUserId()))</span>
+<span class="nc" id="L188">                    newLeaderClientPlayerId = cRoomPlayer.getPlayerId();</span>
+                break;
+            }
+
+<span class="nc bnc" id="L192" title="All 2 branches missed.">            if (newLeaderClientPlayerId != -1) changeLeaderClient(newLeaderClientPlayerId);</span>
+        }
+<span class="nc" id="L194">    }</span>
+
+    @Override
+    public void reconnectRoom(EzyUser peer) {
+<span class="nc" id="L198">        var userId = peer.getName();</span>
+
+<span class="nc" id="L200">        var roomPlayerOption = roomPlayerLst.stream().filter(x -&gt; x.getUserId().equals(userId)).findAny();</span>
+<span class="nc" id="L201">        var roomPlayer = roomPlayerOption.get();</span>
+
+<span class="nc" id="L203">        peer.setProperty(PeerPropertyCode.Room, this);</span>
+<span class="nc" id="L204">        peer.setProperty(PeerPropertyCode.RoomPlayer, roomPlayer);</span>
+
+<span class="nc" id="L206">        threadPool.execute(() -&gt; {</span>
+<span class="nc" id="L207">            System.out.println(&quot;userService send OnJoinRoom&quot;);</span>
+
+<span class="nc" id="L209">            var onJoinRoomEvent = new OperationEvent(EventCode.OnJoinRoom);</span>
+<span class="nc" id="L210">            var joinRoomParameters = new CustomHashtable();</span>
+<span class="nc" id="L211">            joinRoomParameters.put(ParameterCode.Data, toFullData());</span>
+<span class="nc" id="L212">            onJoinRoomEvent.setParameters(joinRoomParameters);</span>
+
+<span class="nc" id="L214">            userService.sendEvent(peer, onJoinRoomEvent);</span>
+<span class="nc" id="L215">        });</span>
+
+<span class="nc bnc" id="L217" title="All 2 branches missed.">        if (isLeaderClientNotFound()) {</span>
+<span class="nc" id="L218">            changeLeaderClient(roomPlayer.getPlayerId());</span>
+        }
+<span class="nc" id="L220">    }</span>
+
+    @Override
+    public boolean changeLeaderClient(EzyUser peer, int newLeaderClientPlayerId) {
+<span class="nc bnc" id="L224" title="All 2 branches missed.">        if (!isLeaderClient(peer)) return false;</span>
+
+<span class="nc" id="L226">        var userId = peer.getName();</span>
+
+<span class="nc bnc" id="L228" title="All 2 branches missed.">        var newLeaderClientOptional = roomPlayerLst.stream().filter(x -&gt; x.getPlayerId() == newLeaderClientPlayerId).findAny();</span>
+<span class="nc bnc" id="L229" title="All 2 branches missed.">        if (!newLeaderClientOptional.isPresent()) return false;</span>
+
+<span class="nc" id="L231">        var newLeaderClient = newLeaderClientOptional.get();</span>
+<span class="nc" id="L232">        var newLeaderClientUserId = newLeaderClient.getUserId();</span>
+
+        // can not change for this mine user
+<span class="nc bnc" id="L235" title="All 2 branches missed.">        if (newLeaderClientUserId.equals(userId)) return false;</span>
+
+<span class="nc" id="L237">        var thisLeaderClientPeer = userService.getPeer(newLeaderClientUserId);</span>
+<span class="nc bnc" id="L238" title="All 2 branches missed.">        if (thisLeaderClientPeer == null) return false;</span>
+
+<span class="nc" id="L240">        this.leaderClientUserId = newLeaderClientUserId;</span>
+
+<span class="nc" id="L242">        threadPool.execute(() -&gt; {</span>
+<span class="nc" id="L243">            var onPlayerJoinRoomEvent = new OperationEvent(EventCode.OnLeaderClientChange);</span>
+<span class="nc" id="L244">            var playerJoinRoomParameters = new CustomHashtable();</span>
+<span class="nc" id="L245">            playerJoinRoomParameters.put(ParameterCode.Data, newLeaderClient.toData());</span>
+<span class="nc" id="L246">            onPlayerJoinRoomEvent.setParameters(playerJoinRoomParameters);</span>
+
+<span class="nc" id="L248">            userService.sendEventToSomePeerByUserIds(getUserIdIterator(-1), onPlayerJoinRoomEvent);</span>
+<span class="nc" id="L249">        });</span>
+
+<span class="nc" id="L251">        return true;</span>
+    }
+
+    @Override
+    public boolean getIsVisible() {
+<span class="nc" id="L256">        return isVisible;</span>
+    }
+
+    @Override
+    public boolean getIsOpen() {
+<span class="nc" id="L261">        return isOpen;</span>
+    }
+
+    @Override
+    public boolean setCustomRoomProperties(EzyUser peer, CustomHashtable customRoomProperties) {
+<span class="nc bnc" id="L266" title="All 2 branches missed.">        if (!isLeaderClient(peer)) return false;</span>
+
+<span class="nc" id="L268">        var keySet = customRoomProperties.keySet();</span>
+<span class="nc bnc" id="L269" title="All 2 branches missed.">        for (var key : keySet) {</span>
+<span class="nc" id="L270">            var value = customRoomProperties.get(key);</span>
+
+<span class="nc bnc" id="L272" title="All 2 branches missed.">            if (value == null) {</span>
+<span class="nc bnc" id="L273" title="All 2 branches missed.">                if (this.customRoomProperties.containsKey(key)) {</span>
+<span class="nc" id="L274">                    this.customRoomProperties.remove(key);</span>
+                }
+            }
+            else {
+<span class="nc bnc" id="L278" title="All 2 branches missed.">                if (!this.customRoomProperties.containsKey(key))</span>
+<span class="nc" id="L279">                    this.customRoomProperties.put(key, value);</span>
+            }
+<span class="nc" id="L281">        }</span>
+
+<span class="nc" id="L283">        threadPool.execute(() -&gt; {</span>
+<span class="nc" id="L284">            var onRoomInfoChangeEvent = new OperationEvent(EventCode.OnRoomInfoChange);</span>
+<span class="nc" id="L285">            var roomInfoChangeParameters = new CustomHashtable();</span>
+<span class="nc" id="L286">            roomInfoChangeParameters.put(ParameterCode.CustomRoomProperties, customRoomProperties);</span>
+<span class="nc" id="L287">            onRoomInfoChangeEvent.setParameters(roomInfoChangeParameters);</span>
+
+<span class="nc" id="L289">            userService.sendEventToSomePeerByUserIds(getUserIdIterator(-1), onRoomInfoChangeEvent);</span>
+<span class="nc" id="L290">        });</span>
+
+<span class="nc" id="L292">        return true;</span>
+    }
+
+    @Override
+    public boolean setCustomRoomPropertiesForLobby(EzyUser peer, CustomHashtable customRoomPropertiesForLobby) {
+<span class="nc bnc" id="L297" title="All 2 branches missed.">        if (!isLeaderClient(peer)) return false;</span>
+
+<span class="nc" id="L299">        var keySet = customRoomPropertiesForLobby.keySet();</span>
+<span class="nc bnc" id="L300" title="All 2 branches missed.">        for (var key : keySet) {</span>
+<span class="nc" id="L301">            var value = customRoomPropertiesForLobby.get(key);</span>
+
+<span class="nc bnc" id="L303" title="All 2 branches missed.">            if (value == null) {</span>
+<span class="nc bnc" id="L304" title="All 2 branches missed.">                if (this.customRoomPropertiesForLobby.contains(key)) {</span>
+<span class="nc" id="L305">                    this.customRoomPropertiesForLobby.remove(key);</span>
+                }
+            }
+            else {
+<span class="nc bnc" id="L309" title="All 2 branches missed.">                if (!this.customRoomPropertiesForLobby.contains(key))</span>
+<span class="nc" id="L310">                    this.customRoomPropertiesForLobby.add(key);</span>
+            }
+<span class="nc" id="L312">        }</span>
+
+<span class="nc" id="L314">        threadPool.execute(() -&gt; {</span>
+<span class="nc" id="L315">            var onRoomInfoChangeEvent = new OperationEvent(EventCode.OnRoomInfoChange);</span>
+<span class="nc" id="L316">            var roomInfoChangeParameters = new CustomHashtable();</span>
+<span class="nc" id="L317">            roomInfoChangeParameters.put(ParameterCode.CustomRoomPropertiesForLobby, this.customRoomPropertiesForLobby);</span>
+<span class="nc" id="L318">            onRoomInfoChangeEvent.setParameters(roomInfoChangeParameters);</span>
+
+<span class="nc" id="L320">            userService.sendEventToSomePeerByUserIds(getUserIdIterator(-1), onRoomInfoChangeEvent);</span>
+<span class="nc" id="L321">        });</span>
+
+<span class="nc" id="L323">        return true;</span>
+    }
+
+    @Override
+    public boolean setMaxPlayer(EzyUser peer, int maxPlayer) {
+<span class="nc bnc" id="L328" title="All 2 branches missed.">        if (!isLeaderClient(peer)) return false;</span>
+<span class="nc bnc" id="L329" title="All 2 branches missed.">        if (maxPlayer == this.maxPlayer) return false;</span>
+
+<span class="nc bnc" id="L331" title="All 2 branches missed.">        if (this.maxPlayer &lt; getPlayerCount()) return false;</span>
+<span class="nc" id="L332">        this.maxPlayer = maxPlayer;</span>
+
+<span class="nc" id="L334">        threadPool.execute(() -&gt; {</span>
+<span class="nc" id="L335">            var onRoomInfoChangeEvent = new OperationEvent(EventCode.OnRoomInfoChange);</span>
+<span class="nc" id="L336">            var roomInfoChangeParameters = new CustomHashtable();</span>
+<span class="nc" id="L337">            roomInfoChangeParameters.put(ParameterCode.MaxPlayer, maxPlayer);</span>
+<span class="nc" id="L338">            onRoomInfoChangeEvent.setParameters(roomInfoChangeParameters);</span>
+
+<span class="nc" id="L340">            userService.sendEventToSomePeerByUserIds(getUserIdIterator(-1), onRoomInfoChangeEvent);</span>
+<span class="nc" id="L341">        });</span>
+
+<span class="nc" id="L343">        return true;</span>
+    }
+
+    @Override
+    public boolean setOpen(EzyUser peer, boolean isOpen) {
+<span class="nc bnc" id="L348" title="All 2 branches missed.">        if (!isLeaderClient(peer)) return false;</span>
+<span class="nc bnc" id="L349" title="All 2 branches missed.">        if (isOpen == this.isOpen) return false;</span>
+
+<span class="nc" id="L351">        this.isOpen = isOpen;</span>
+
+<span class="nc" id="L353">        threadPool.execute(() -&gt; {</span>
+<span class="nc" id="L354">            var onRoomInfoChangeEvent = new OperationEvent(EventCode.OnRoomInfoChange);</span>
+<span class="nc" id="L355">            var roomInfoChangeParameters = new CustomHashtable();</span>
+<span class="nc" id="L356">            roomInfoChangeParameters.put(ParameterCode.IsOpen, isOpen);</span>
+<span class="nc" id="L357">            onRoomInfoChangeEvent.setParameters(roomInfoChangeParameters);</span>
+
+<span class="nc" id="L359">            userService.sendEventToSomePeerByUserIds(getUserIdIterator(-1), onRoomInfoChangeEvent);</span>
+<span class="nc" id="L360">        });</span>
+
+<span class="nc" id="L362">        return true;</span>
+    }
+
+    @Override
+    public boolean setVisible(EzyUser peer, boolean isVisible) {
+<span class="nc bnc" id="L367" title="All 2 branches missed.">        if (!isLeaderClient(peer)) return false;</span>
+<span class="nc bnc" id="L368" title="All 2 branches missed.">        if (isVisible == this.isVisible) return false;</span>
+
+<span class="nc" id="L370">        this.isVisible = isVisible;</span>
+
+<span class="nc" id="L372">        threadPool.execute(() -&gt; {</span>
+<span class="nc" id="L373">            var onRoomInfoChangeEvent = new OperationEvent(EventCode.OnRoomInfoChange);</span>
+<span class="nc" id="L374">            var roomInfoChangeParameters = new CustomHashtable();</span>
+<span class="nc" id="L375">            roomInfoChangeParameters.put(ParameterCode.IsVisible, isVisible);</span>
+<span class="nc" id="L376">            onRoomInfoChangeEvent.setParameters(roomInfoChangeParameters);</span>
+
+<span class="nc" id="L378">            userService.sendEventToSomePeerByUserIds(getUserIdIterator(-1), onRoomInfoChangeEvent);</span>
+<span class="nc" id="L379">        });</span>
+
+<span class="nc" id="L381">        return true;</span>
+    }
+
+    @Override
+    public boolean setPassword(EzyUser peer, String password) {
+<span class="nc bnc" id="L386" title="All 2 branches missed.">        if (!isLeaderClient(peer)) return false;</span>
+<span class="nc bnc" id="L387" title="All 2 branches missed.">        if (password.equals(this.password)) return false;</span>
+
+<span class="nc" id="L389">        this.password = password;</span>
+
+<span class="nc" id="L391">        threadPool.execute(() -&gt; {</span>
+<span class="nc" id="L392">            var onRoomInfoChangeEvent = new OperationEvent(EventCode.OnRoomInfoChange);</span>
+<span class="nc" id="L393">            var roomInfoChangeParameters = new CustomHashtable();</span>
+<span class="nc" id="L394">            roomInfoChangeParameters.put(ParameterCode.Password, password);</span>
+<span class="nc" id="L395">            onRoomInfoChangeEvent.setParameters(roomInfoChangeParameters);</span>
+
+<span class="nc" id="L397">            userService.sendEventToSomePeerByUserIds(getUserIdIterator(-1), onRoomInfoChangeEvent);</span>
+<span class="nc" id="L398">        });</span>
+
+<span class="nc" id="L400">        return true;</span>
+    }
+
+    @Override
+    public boolean setTtl(EzyUser peer, int ttl) {
+<span class="nc bnc" id="L405" title="All 2 branches missed.">        if (!isLeaderClient(peer)) return false;</span>
+
+<span class="nc" id="L407">        this.ttl = ttl;</span>
+
+<span class="nc" id="L409">        return true;</span>
+    }
+
+    @Override
+    public boolean setCustomPlayerProperties(EzyUser peer, int playerId, CustomHashtable customPlayerProperties) {
+<span class="nc bnc" id="L414" title="All 2 branches missed.">        var roomPlayerOption = roomPlayerLst.stream().filter(x -&gt; x.getPlayerId() == playerId).findAny();</span>
+<span class="nc bnc" id="L415" title="All 2 branches missed.">        if (!roomPlayerOption.isPresent()) return false;</span>
+
+<span class="nc" id="L417">        var roomPlayer = roomPlayerOption.get();</span>
+
+<span class="nc" id="L419">        var keySet = customPlayerProperties.keySet();</span>
+<span class="nc bnc" id="L420" title="All 2 branches missed.">        for (var key : keySet) {</span>
+<span class="nc" id="L421">            var value = customPlayerProperties.get(key);</span>
+
+<span class="nc bnc" id="L423" title="All 2 branches missed.">            if (value == null) {</span>
+<span class="nc bnc" id="L424" title="All 2 branches missed.">                if (roomPlayer.getCustomProperties().containsKey(key)) {</span>
+<span class="nc" id="L425">                    roomPlayer.getCustomProperties().remove(key);</span>
+                }
+            }
+            else {
+<span class="nc bnc" id="L429" title="All 2 branches missed.">                if (!roomPlayer.getCustomProperties().containsKey(key))</span>
+<span class="nc" id="L430">                    roomPlayer.getCustomProperties().put(key, value);</span>
+<span class="nc" id="L431">                else  roomPlayer.getCustomProperties().replace(key, value);</span>
+            }
+<span class="nc" id="L433">        }</span>
+
+<span class="nc" id="L435">        threadPool.execute(() -&gt; {</span>
+<span class="nc" id="L436">            var onCustomPlayerPropertiesChangeEvent = new OperationEvent(EventCode.OnCustomPlayerPropertiesChange);</span>
+<span class="nc" id="L437">            var customPlayerPropertiesChangeParameters = new CustomHashtable();</span>
+<span class="nc" id="L438">            customPlayerPropertiesChangeParameters.put(ParameterCode.Data, new Object[] {</span>
+<span class="nc" id="L439">                    roomPlayer.getPlayerId(),</span>
+                    customPlayerProperties
+            });
+<span class="nc" id="L442">            onCustomPlayerPropertiesChangeEvent.setParameters(customPlayerPropertiesChangeParameters);</span>
+
+<span class="nc" id="L444">            userService.sendEventToSomePeerByUserIds(getUserIdIterator(-1), onCustomPlayerPropertiesChangeEvent);</span>
+<span class="nc" id="L445">        });</span>
+
+<span class="nc" id="L447">        return true;</span>
+    }
+
+    private int getObjectId() {
+<span class="nc" id="L451">        var objectId = 0;</span>
+
+<span class="nc bnc" id="L453" title="All 2 branches missed.">        while (gameObjectDic.containsKey(objectId)) {</span>
+<span class="nc" id="L454">            objectId++;</span>
+        }
+
+<span class="nc" id="L457">        return objectId;</span>
+    }
+
+    @Override
+    public RoomGameObject createGameObject(EzyUser peer, String prefabPath, Object initializeData, Object synchronizationData) {
+<span class="nc" id="L462">        var userId = peer.getName();</span>
+
+<span class="nc" id="L464">        var roomPlayerOption = roomPlayerLst.stream().filter(x -&gt; x.getUserId().equals(userId)).findAny();</span>
+<span class="nc bnc" id="L465" title="All 2 branches missed.">        if (!roomPlayerOption.isPresent()) return null;</span>
+
+<span class="nc" id="L467">        var roomPlayer = roomPlayerOption.get();</span>
+
+<span class="nc" id="L469">        var roomGameObject = new RoomGameObject();</span>
+
+<span class="nc" id="L471">        roomGameObject.setObjectId(getObjectId());</span>
+<span class="nc" id="L472">        roomGameObject.setOwnerId(roomPlayer.getPlayerId());</span>
+<span class="nc" id="L473">        roomGameObject.setInitializeData(initializeData);</span>
+<span class="nc" id="L474">        roomGameObject.setPrefabPath(prefabPath);</span>
+<span class="nc" id="L475">        roomGameObject.setSynchronizationData(synchronizationData);</span>
+
+<span class="nc" id="L477">        gameObjectDic.put(roomGameObject.getObjectId(), roomGameObject);</span>
+
+<span class="nc" id="L479">        threadPool.execute(() -&gt; {</span>
+<span class="nc" id="L480">            var event = new OperationEvent(EventCode.OnCreateGameObject);</span>
+<span class="nc" id="L481">            var parameters = new CustomHashtable();</span>
+<span class="nc" id="L482">            parameters.put(ParameterCode.Data, roomGameObject.toData());</span>
+<span class="nc" id="L483">            event.setParameters(parameters);</span>
+
+<span class="nc" id="L485">            userService.sendEventToSomePeerByUserIds(getUserIdIterator(-1), event);</span>
+<span class="nc" id="L486">        });</span>
+
+<span class="nc" id="L488">        return roomGameObject;</span>
+    }
+
+    @Override
+    public boolean destroyGameObject(EzyUser peer, int objectId) {
+<span class="nc" id="L493">        var roomGameObject = gameObjectDic.getOrDefault(objectId, null);</span>
+<span class="nc bnc" id="L494" title="All 2 branches missed.">        if (roomGameObject == null) return false;</span>
+
+<span class="nc" id="L496">        gameObjectDic.remove(objectId);</span>
+
+<span class="nc" id="L498">        threadPool.execute(() -&gt; {</span>
+<span class="nc" id="L499">            var event = new OperationEvent(EventCode.OnDestroyGameObject);</span>
+<span class="nc" id="L500">            var parameters = new CustomHashtable();</span>
+<span class="nc" id="L501">            parameters.put(ParameterCode.ObjectId, new Object[] {</span>
+<span class="nc" id="L502">                    objectId</span>
+            });
+<span class="nc" id="L504">            event.setParameters(parameters);</span>
+
+<span class="nc" id="L506">            userService.sendEventToSomePeerByUserIds(getUserIdIterator(-1), event);</span>
+<span class="nc" id="L507">        });</span>
+
+<span class="nc" id="L509">        return true;</span>
+    }
+
+    @Override
+    public boolean synchronizationDataGameObject(EzyUser peer, int objectId, Object synchronizationData) {
+<span class="nc" id="L514">        var roomGameObject = gameObjectDic.getOrDefault(objectId, null);</span>
+<span class="nc bnc" id="L515" title="All 2 branches missed.">        if (roomGameObject == null) return false;</span>
+
+<span class="nc" id="L517">        roomGameObject.setSynchronizationData(synchronizationData);</span>
+
+<span class="nc" id="L519">        threadPool.execute(() -&gt; {</span>
+<span class="nc" id="L520">            var event = new OperationEvent(EventCode.OnSynchronizationDataGameObject);</span>
+<span class="nc" id="L521">            var parameters = new CustomHashtable();</span>
+<span class="nc" id="L522">            parameters.put(ParameterCode.Data, new Object[] {</span>
+<span class="nc" id="L523">                    objectId,</span>
+                    synchronizationData
+            });
+<span class="nc" id="L526">            event.setParameters(parameters);</span>
+
+<span class="nc" id="L528">            userService.sendEventToSomePeerByUserIds(getUserIdIterator(-1), event);</span>
+<span class="nc" id="L529">        });</span>
+
+<span class="nc" id="L531">        return true;</span>
+    }
+
+    @Override
+    public boolean rpcGameObject(EzyUser peer, int objectId, int eunRPCCommand, Object rpcData) {
+<span class="nc" id="L536">        var roomGameObject = gameObjectDic.getOrDefault(objectId, null);</span>
+<span class="nc bnc" id="L537" title="All 2 branches missed.">        if (roomGameObject == null) return false;</span>
+
+<span class="nc" id="L539">        threadPool.execute(() -&gt; {</span>
+<span class="nc" id="L540">            var event = new OperationEvent(EventCode.OnRpcGameObject);</span>
+<span class="nc" id="L541">            var eventParameters = new CustomHashtable();</span>
+<span class="nc" id="L542">            eventParameters.put(ParameterCode.Data, new Object[] {</span>
+<span class="nc" id="L543">                    objectId,</span>
+<span class="nc" id="L544">                    eunRPCCommand,</span>
+                    rpcData
+            });
+<span class="nc" id="L547">            event.setParameters(eventParameters);</span>
+
+<span class="nc" id="L549">            userService.sendEventToSomePeerByUserIds(getUserIdIterator(-1), event);</span>
+<span class="nc" id="L550">        });</span>
+
+<span class="nc" id="L552">        return true;</span>
+    }
+
+    @Override
+    public boolean transferOwnerGameObject(EzyUser peer, int objectId, int newOwnerId) {
+<span class="nc" id="L557">        var roomGameObject = gameObjectDic.getOrDefault(objectId, null);</span>
+<span class="nc bnc" id="L558" title="All 2 branches missed.">        if (roomGameObject == null) return false;</span>
+<span class="nc bnc" id="L559" title="All 2 branches missed.">        if (roomGameObject.getOwnerId() == newOwnerId) return false;</span>
+
+<span class="nc" id="L561">        roomGameObject.setOwnerId(newOwnerId);</span>
+
+<span class="nc" id="L563">        threadPool.execute(() -&gt; {</span>
+<span class="nc" id="L564">            var event = new OperationEvent(EventCode.OnTransferOwnerGameObject);</span>
+<span class="nc" id="L565">            var eventParameters = new CustomHashtable();</span>
+<span class="nc" id="L566">            eventParameters.put(ParameterCode.Data, new Object[] {</span>
+<span class="nc" id="L567">                    objectId,</span>
+<span class="nc" id="L568">                    newOwnerId</span>
+            });
+<span class="nc" id="L570">            event.setParameters(eventParameters);</span>
+
+<span class="nc" id="L572">            userService.sendEventToSomePeerByUserIds(getUserIdIterator(-1), event);</span>
+<span class="nc" id="L573">        });</span>
+
+<span class="nc" id="L575">        return true;</span>
+    }
+
+    @Override
+    public long getTsCreate() {
+<span class="nc" id="L580">        return tsCreate;</span>
+    }
+
+    @Override
+    public String getPassword() {
+<span class="nc" id="L585">        return password;</span>
+    }
+
+    @Override
+    public int getTtl() {
+<span class="nc" id="L590">        return ttl;</span>
+    }
+
+    @Override
+    public Object[] toFullLobbyData() {
+<span class="nc" id="L595">        var customRoomProperties = getCustomRoomProperties();</span>
+<span class="nc" id="L596">        var customRoomPropertiesForLobby = getCustomRoomPropertiesForLobby();</span>
+
+<span class="nc" id="L598">        var returnCustomRoomPropertiesForLobby = new CustomHashtable();</span>
+<span class="nc" id="L599">        customRoomPropertiesForLobby.forEachRemaining(childCustomRoomPropertiesForLobby -&gt; {</span>
+<span class="nc bnc" id="L600" title="All 2 branches missed.">            if (customRoomProperties.containsKey(childCustomRoomPropertiesForLobby)) {</span>
+<span class="nc bnc" id="L601" title="All 2 branches missed.">                if (!returnCustomRoomPropertiesForLobby.containsKey(childCustomRoomPropertiesForLobby))</span>
+<span class="nc" id="L602">                    returnCustomRoomPropertiesForLobby.put(childCustomRoomPropertiesForLobby, customRoomProperties.get(childCustomRoomPropertiesForLobby));</span>
+<span class="nc" id="L603">                else returnCustomRoomPropertiesForLobby.replace(childCustomRoomPropertiesForLobby, customRoomProperties.get(childCustomRoomPropertiesForLobby));</span>
+            }
+<span class="nc" id="L605">        });</span>
+
+<span class="nc" id="L607">        return new Object[] {</span>
+<span class="nc" id="L608">                roomId,</span>
+<span class="nc" id="L609">                isOpen,</span>
+<span class="nc" id="L610">                maxPlayer,</span>
+<span class="nc bnc" id="L611" title="All 2 branches missed.">                !EzyStrings.isNoContent(password),</span>
+<span class="nc" id="L612">                getPlayerCount(),</span>
+                returnCustomRoomPropertiesForLobby
+        };
+    }
+
+    @Override
+    public Object[] toFullData() {
+<span class="nc" id="L619">        var returnRoomPlayer = new LinkedList&lt;Object&gt;();</span>
+<span class="nc bnc" id="L620" title="All 2 branches missed.">        for (var i = 0; i &lt; roomPlayerLst.size(); i++) {</span>
+<span class="nc" id="L621">            returnRoomPlayer.add(roomPlayerLst.get(i).toData());</span>
+        }
+
+<span class="nc" id="L624">        var gameObjectValues = gameObjectDic.values().iterator();</span>
+<span class="nc" id="L625">        var returnGameObjectDic = new LinkedList&lt;Object&gt;();</span>
+<span class="nc bnc" id="L626" title="All 2 branches missed.">        while (gameObjectValues.hasNext()) {</span>
+<span class="nc" id="L627">            returnGameObjectDic.add(gameObjectValues.next().toData());</span>
+        }
+
+<span class="nc" id="L630">        return new Object[]{</span>
+<span class="nc" id="L631">                roomId,</span>
+<span class="nc" id="L632">                isOpen,</span>
+<span class="nc" id="L633">                maxPlayer,</span>
+                password,
+                returnRoomPlayer,
+                customRoomProperties,
+                customRoomPropertiesForLobby,
+<span class="nc" id="L638">                isVisible,</span>
+                leaderClientUserId,
+<span class="nc" id="L640">                tsCreate,</span>
+<span class="nc" id="L641">                ttl,</span>
+                returnGameObjectDic
+        };
+    }
+
+    @Override
+    public Iterator&lt;String&gt; getUserIdIterator(int excludeUserId) {
+<span class="nc" id="L648">        return getUserIdIterable(excludeUserId).iterator();</span>
+    }
+
+    @Override
+    public ILobby getLobby() {
+<span class="nc" id="L653">        return lobby;</span>
+    }
+
+    private Iterable&lt;String&gt; getUserIdIterable(int excludeUserId) {
+<span class="nc" id="L657">        var userIdLst = new LinkedList&lt;String&gt;();</span>
+
+<span class="nc bnc" id="L659" title="All 2 branches missed.">        for (var roomPlayer : roomPlayerLst) {</span>
+<span class="nc bnc" id="L660" title="All 2 branches missed.">            if (roomPlayer.getPlayerId() != excludeUserId) userIdLst.add(roomPlayer.getUserId());</span>
+<span class="nc" id="L661">        }</span>
+
+<span class="nc" id="L663">        return userIdLst;</span>
+    }
+
+<span class="nc bnc" id="L666" title="All 2 branches missed.">    private boolean isLeaderClient(@NonNull EzyUser peer) {</span>
+<span class="nc" id="L667">        var userId = peer.getName();</span>
+<span class="nc" id="L668">        return leaderClientUserId.equals(userId);</span>
+    }
+
+    private boolean changeLeaderClient(int newLeaderClientPlayerId) {
+<span class="nc bnc" id="L672" title="All 2 branches missed.">        var newLeaderClientOptional = roomPlayerLst.stream().filter(x -&gt; x.getPlayerId() == newLeaderClientPlayerId).findAny();</span>
+<span class="nc bnc" id="L673" title="All 2 branches missed.">        if (!newLeaderClientOptional.isPresent()) return false;</span>
+
+<span class="nc" id="L675">        var newLeaderClient = newLeaderClientOptional.get();</span>
+<span class="nc" id="L676">        var leaderClientUserId = newLeaderClient.getUserId();</span>
+
+<span class="nc" id="L678">        var peer = userService.getPeer(leaderClientUserId);</span>
+<span class="nc bnc" id="L679" title="All 2 branches missed.">        if (peer == null) return false;</span>
+
+<span class="nc" id="L681">        this.leaderClientUserId = leaderClientUserId;</span>
+
+<span class="nc" id="L683">        threadPool.execute(() -&gt; {</span>
+<span class="nc" id="L684">            var onLeaderClientChangeEvent = new OperationEvent(EventCode.OnLeaderClientChange);</span>
+<span class="nc" id="L685">            var leaderClientChangeParameters = new CustomHashtable();</span>
+<span class="nc" id="L686">            leaderClientChangeParameters.put(ParameterCode.Data, newLeaderClient.toData());</span>
+<span class="nc" id="L687">            onLeaderClientChangeEvent.setParameters(leaderClientChangeParameters);</span>
+
+<span class="nc" id="L689">            userService.sendEventToSomePeerByUserIds(getUserIdIterator(-1), onLeaderClientChangeEvent);</span>
+<span class="nc" id="L690">        });</span>
+
+<span class="nc" id="L692">        return true;</span>
+    }
+
+    private boolean isLeaderClientNotFound() {
+<span class="nc bnc" id="L696" title="All 2 branches missed.">        if (EzyStrings.isNoContent(leaderClientUserId)) return true;</span>
+
+<span class="nc" id="L698">        var isContainPeer = userService.containsPeer(leaderClientUserId);</span>
+
+<span class="nc bnc" id="L700" title="All 2 branches missed.">        return !isContainPeer;</span>
+    }
+
+<span class="nc bnc" id="L703" title="All 6 branches missed.">    public Room(int roomId, @NonNull RoomOption roomOption, @NonNull ILobby lobby, @NonNull IUserService userService) {</span>
+<span class="nc" id="L704">        this.roomId = roomId;</span>
+<span class="nc" id="L705">        this.roomPlayerLst = new LinkedList&lt;&gt;();</span>
+
+<span class="nc" id="L707">        this.maxPlayer = roomOption.getMaxPlayer();</span>
+
+<span class="nc" id="L709">        this.isVisible = roomOption.isVisible();</span>
+<span class="nc" id="L710">        this.isOpen = roomOption.isOpen();</span>
+<span class="nc" id="L711">        this.password = roomOption.getPassword();</span>
+<span class="nc" id="L712">        this.lobby = lobby;</span>
+
+<span class="nc" id="L714">        this.tsCreate = System.currentTimeMillis();</span>
+<span class="nc" id="L715">        this.ttl = roomOption.getTtl();</span>
+<span class="nc" id="L716">        this.gameObjectDic = new HashMap&lt;Integer, RoomGameObject&gt;();</span>
+
+<span class="nc" id="L718">        this.userService = userService;</span>
+
+<span class="nc" id="L720">        this.threadPool = Executors.newSingleThreadExecutor();</span>
+        {
+<span class="nc" id="L722">            this.customRoomProperties = new CustomHashtable();</span>
+<span class="nc" id="L723">            this.customRoomProperties.putAll(roomOption.getCustomRoomProperties());</span>
+        }
+
+        {
+<span class="nc" id="L727">            this.customRoomPropertiesForLobby = new LinkedList&lt;&gt;();</span>
+<span class="nc" id="L728">            this.customRoomPropertiesForLobby.addAll(roomOption.getCustomRoomPropertiesForLobby());</span>
+        }
+
+<span class="nc" id="L731">        leaderClientUserId = &quot;&quot;;</span>
+
+<span class="nc" id="L733">        currentPlayerId = 0;</span>
+<span class="nc" id="L734">    }</span>
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.4.201905082037</span></div></body></html>

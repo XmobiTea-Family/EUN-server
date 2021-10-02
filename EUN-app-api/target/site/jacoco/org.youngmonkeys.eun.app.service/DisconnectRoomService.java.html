@@ -1,0 +1,80 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>DisconnectRoomService.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">EUN-app-api</a> &gt; <a href="index.source.html" class="el_package">org.youngmonkeys.eun.app.service</a> &gt; <span class="el_source">DisconnectRoomService.java</span></div><h1>DisconnectRoomService.java</h1><pre class="source lang-java linenums">package org.youngmonkeys.eun.app.service;
+
+import com.tvd12.ezyfox.bean.annotation.EzyAutoBind;
+import com.tvd12.ezyfox.bean.annotation.EzySingleton;
+import com.tvd12.ezyfox.util.EzyLoggable;
+import lombok.NonNull;
+import lombok.var;
+import org.youngmonkeys.eun.app.entity.DisconnectRoomInfo;
+
+import java.util.Hashtable;
+import java.util.LinkedList;
+
+@EzySingleton
+public class DisconnectRoomService extends EzyLoggable implements IDisconnectRoomService {
+    @EzyAutoBind
+    private ITimerService timerService;
+
+    private Hashtable&lt;String, DisconnectRoomInfo&gt; disconnectRoomDic;
+
+    @Override
+<span class="nc bnc" id="L21" title="All 4 branches missed.">    public boolean addDisconnectRoom(@NonNull String userId, @NonNull DisconnectRoomInfo disconnectRoomInfo) {</span>
+<span class="nc bnc" id="L22" title="All 2 branches missed.">        if (disconnectRoomDic.containsKey(userId)) disconnectRoomDic.replace(userId, disconnectRoomInfo);</span>
+<span class="nc" id="L23">        else disconnectRoomDic.put(userId, disconnectRoomInfo);</span>
+
+<span class="nc" id="L25">        return true;</span>
+    }
+
+    @Override
+<span class="nc bnc" id="L29" title="All 2 branches missed.">    public DisconnectRoomInfo getDisconnectRoom(@NonNull String userId) {</span>
+<span class="nc" id="L30">        return disconnectRoomDic.getOrDefault(userId, null);</span>
+    }
+
+    @Override
+<span class="nc bnc" id="L34" title="All 2 branches missed.">    public boolean removeDisconnectRoom(@NonNull String userId) {</span>
+<span class="nc bnc" id="L35" title="All 2 branches missed.">        if (disconnectRoomDic.containsKey(userId)) {</span>
+<span class="nc" id="L36">            disconnectRoomDic.remove(userId);</span>
+<span class="nc" id="L37">            return true;</span>
+        }
+
+<span class="nc" id="L40">        return true;</span>
+    }
+
+    private void onEverySecond() {
+<span class="nc" id="L44">        var tsNow = System.currentTimeMillis();</span>
+
+<span class="nc" id="L46">        var values = disconnectRoomDic.values();</span>
+
+<span class="nc" id="L48">        var disconnectRoomInfoTimeoutLst = new LinkedList&lt;DisconnectRoomInfo&gt;();</span>
+<span class="nc bnc" id="L49" title="All 2 branches missed.">        for (var disconnectRoomInfo : values) {</span>
+<span class="nc bnc" id="L50" title="All 2 branches missed.">            if (disconnectRoomInfo.getTsTimeoutReconnect() &lt; tsNow) {</span>
+<span class="nc" id="L51">                disconnectRoomInfoTimeoutLst.add(disconnectRoomInfo);</span>
+            }
+<span class="nc" id="L53">        }</span>
+
+<span class="nc bnc" id="L55" title="All 2 branches missed.">        for (var i = 0; i &lt; disconnectRoomInfoTimeoutLst.size(); i++) {</span>
+<span class="nc" id="L56">            var disconnectRoomInfo = disconnectRoomInfoTimeoutLst.get(i);</span>
+<span class="nc" id="L57">            var userId = disconnectRoomInfo.getRoomPlayer().getUserId();</span>
+<span class="nc" id="L58">            removeDisconnectRoom(userId);</span>
+<span class="nc" id="L59">            disconnectRoomInfo.getRoom().leaveRoomBecauseTimeoutReconnect(userId);</span>
+        }
+<span class="nc" id="L61">    }</span>
+
+<span class="nc" id="L63">    public DisconnectRoomService() {</span>
+<span class="nc" id="L64">        disconnectRoomDic = new Hashtable&lt;&gt;();</span>
+
+<span class="nc" id="L66">        var thread = new Thread(() -&gt; {</span>
+            try {
+<span class="nc" id="L68">                Thread.sleep(300);</span>
+
+<span class="nc" id="L70">                timerService.subscriberEverySecond(() -&gt; onEverySecond());</span>
+            }
+<span class="nc" id="L72">            catch (Exception ex) {</span>
+<span class="nc" id="L73">                logger.error(&quot;DisconnectRoomService&quot;, ex);</span>
+<span class="nc" id="L74">            }</span>
+<span class="nc" id="L75">        });</span>
+
+<span class="nc" id="L77">        thread.start();</span>
+<span class="nc" id="L78">    }</span>
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.4.201905082037</span></div></body></html>

@@ -1,0 +1,140 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>Lobby.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">EUN-app-api</a> &gt; <a href="index.source.html" class="el_package">org.youngmonkeys.eun.app.entity</a> &gt; <span class="el_source">Lobby.java</span></div><h1>Lobby.java</h1><pre class="source lang-java linenums">package org.youngmonkeys.eun.app.entity;
+
+import com.tvd12.ezyfoxserver.entity.EzyUser;
+import lombok.NonNull;
+import lombok.var;
+import org.youngmonkeys.eun.common.service.CustomRandom;
+
+import java.util.Hashtable;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Vector;
+
+public class Lobby implements ILobby {
+    private Hashtable&lt;String, EzyUser&gt; peerDic;
+    private Hashtable&lt;Integer, IRoom&gt; roomDic;
+
+    private int lobbyId;
+
+    private List&lt;String&gt; chatUserIdLst;
+
+    @Override
+    public int getLobbyId() {
+<span class="nc" id="L23">        return lobbyId;</span>
+    }
+
+    @Override
+    public int playerSize() {
+<span class="nc" id="L28">        return peerDic.size();</span>
+    }
+
+    @Override
+    public int roomSize() {
+<span class="nc" id="L33">        return roomDic.size();</span>
+    }
+
+    @Override
+<span class="nc bnc" id="L37" title="All 4 branches missed.">    public boolean joinLobby(@NonNull String userId, @NonNull EzyUser peer) {</span>
+<span class="nc bnc" id="L38" title="All 2 branches missed.">        if (peerDic.containsKey(userId)) peerDic.replace(userId, peer);</span>
+<span class="nc" id="L39">        else peerDic.put(userId, peer);</span>
+
+<span class="nc" id="L41">        return true;</span>
+    }
+
+    @Override
+<span class="nc bnc" id="L45" title="All 2 branches missed.">    public boolean leaveLobby(@NonNull String userId) {</span>
+<span class="nc bnc" id="L46" title="All 2 branches missed.">        if (peerDic.containsKey(userId)) {</span>
+<span class="nc" id="L47">            peerDic.remove(userId);</span>
+<span class="nc" id="L48">            removeChatPeer(userId);</span>
+<span class="nc" id="L49">            return true;</span>
+        }
+
+<span class="nc" id="L52">        return false;</span>
+    }
+
+    @Override
+    public Iterator&lt;EzyUser&gt; getUserIterator() {
+<span class="nc" id="L57">        return peerDic.values().iterator();</span>
+    }
+
+    @Override
+    public Iterator&lt;IRoom&gt; getRoomIterator() {
+<span class="nc" id="L62">        return roomDic.values().iterator();</span>
+    }
+
+    @Override
+    public Object[] getLobbyStats() {
+<span class="nc" id="L67">        return new Object[] {</span>
+<span class="nc" id="L68">                getLobbyId(),</span>
+<span class="nc" id="L69">                playerSize(),</span>
+<span class="nc" id="L70">                roomSize()</span>
+        };
+    }
+
+    @Override
+    public IRoom getRoom(int roomId) {
+<span class="nc" id="L76">        return roomDic.getOrDefault(roomId, null);</span>
+    }
+
+    @Override
+<span class="nc bnc" id="L80" title="All 2 branches missed.">    public boolean addRoom(@NonNull IRoom room) {</span>
+<span class="nc bnc" id="L81" title="All 2 branches missed.">        if (roomDic.containsKey(room.getRoomId())) {</span>
+<span class="nc" id="L82">            return false;</span>
+        }
+
+<span class="nc" id="L85">        roomDic.put(room.getRoomId(), room);</span>
+<span class="nc" id="L86">        return true;</span>
+    }
+
+    @Override
+<span class="nc bnc" id="L90" title="All 2 branches missed.">    public boolean removeRoom(@NonNull IRoom room) {</span>
+<span class="nc bnc" id="L91" title="All 2 branches missed.">        if (!roomDic.containsKey(room.getRoomId())) {</span>
+<span class="nc" id="L92">            return false;</span>
+        }
+
+<span class="nc" id="L95">        roomDic.remove(room.getRoomId());</span>
+<span class="nc" id="L96">        return true;</span>
+    }
+
+    @Override
+    public int getRandomRoomId() {
+<span class="nc" id="L101">        var roomId = 0;</span>
+        do {
+<span class="nc" id="L103">            roomId = CustomRandom.range(0, Integer.MAX_VALUE);</span>
+        }
+<span class="nc bnc" id="L105" title="All 2 branches missed.">        while (roomDic.containsKey(roomId));</span>
+
+<span class="nc" id="L107">        return roomId;</span>
+    }
+
+    @Override
+<span class="nc bnc" id="L111" title="All 2 branches missed.">    public boolean addChatPeer(@NonNull String userId) {</span>
+<span class="nc bnc" id="L112" title="All 2 branches missed.">        if (chatUserIdLst.contains(userId)) return false;</span>
+
+<span class="nc" id="L114">        chatUserIdLst.add(userId);</span>
+<span class="nc" id="L115">        return true;</span>
+    }
+
+    @Override
+<span class="nc bnc" id="L119" title="All 2 branches missed.">    public boolean removeChatPeer(@NonNull String userId) {</span>
+<span class="nc bnc" id="L120" title="All 2 branches missed.">        if (!chatUserIdLst.contains(userId)) return false;</span>
+
+<span class="nc" id="L122">        chatUserIdLst.remove(userId);</span>
+<span class="nc" id="L123">        return true;</span>
+    }
+
+    @Override
+    public Iterator&lt;String&gt; getChatPeerUserIdIterator() {
+<span class="nc" id="L128">        return chatUserIdLst.iterator();</span>
+    }
+
+<span class="nc" id="L131">    public Lobby(int lobbyId) {</span>
+<span class="nc" id="L132">        peerDic = new Hashtable&lt;&gt;();</span>
+<span class="nc" id="L133">        roomDic = new Hashtable&lt;&gt;();</span>
+
+<span class="nc" id="L135">        chatUserIdLst = new Vector&lt;&gt;();</span>
+
+<span class="nc" id="L137">        this.lobbyId = lobbyId;</span>
+<span class="nc" id="L138">    }</span>
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.4.201905082037</span></div></body></html>

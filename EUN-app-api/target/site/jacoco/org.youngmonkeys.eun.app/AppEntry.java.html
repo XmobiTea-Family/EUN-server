@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>AppEntry.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">EUN-app-api</a> &gt; <a href="index.source.html" class="el_package">org.youngmonkeys.eun.app</a> &gt; <span class="el_source">AppEntry.java</span></div><h1>AppEntry.java</h1><pre class="source lang-java linenums">package org.youngmonkeys.eun.app;
+
+import java.util.Properties;
+
+import com.tvd12.ezyfox.bean.EzyBeanContextBuilder;
+import com.tvd12.ezyfoxserver.context.EzyAppContext;
+import com.tvd12.ezyfoxserver.context.EzyZoneContext;
+import com.tvd12.ezyfoxserver.setting.EzyAppSetting;
+import com.tvd12.ezyfoxserver.support.entry.EzyDefaultAppEntry;
+
+import org.youngmonkeys.eun.common.constant.CommonConstants;
+
+<span class="nc" id="L13">public class AppEntry extends EzyDefaultAppEntry {</span>
+
+	@Override
+	protected void preConfig(EzyAppContext ctx) {
+<span class="nc" id="L17">		logger.info(&quot;\n=================== EUN APP START CONFIG ================\n&quot;);</span>
+<span class="nc" id="L18">	}</span>
+	
+	@Override
+	protected void postConfig(EzyAppContext ctx) {
+<span class="nc" id="L22">		logger.info(&quot;\n=================== EUN APP END CONFIG ================\n&quot;);</span>
+<span class="nc" id="L23">	}</span>
+	
+	@Override
+	protected void setupBeanContext(EzyAppContext context, EzyBeanContextBuilder builder) {
+<span class="nc" id="L27">		EzyZoneContext zoneContext = context.getParent();</span>
+<span class="nc" id="L28">		Properties pluginProperties = zoneContext.getProperty(CommonConstants.PLUGIN_PROPERTIES);</span>
+<span class="nc" id="L29">		EzyAppSetting setting = context.getApp().getSetting();</span>
+<span class="nc" id="L30">		builder.addProperties(&quot;EUN-common-config.properties&quot;);</span>
+<span class="nc" id="L31">		builder.addProperties(pluginProperties);</span>
+<span class="nc" id="L32">		builder.addProperties(getConfigFile(setting));</span>
+		// The line below will be removed when ezyfox-server is updated to version 1.2.0
+<span class="nc" id="L34">		builder.scan(getScanablePackages());</span>
+<span class="nc" id="L35">		Properties properties = builder.getProperties();</span>
+<span class="nc" id="L36">	}</span>
+	
+	protected String getConfigFile(EzyAppSetting setting) {
+<span class="nc" id="L39">		return setting.getConfigFile();</span>
+	}
+	
+	@Override
+	protected String[] getScanablePackages() {
+<span class="nc" id="L44">		return new String[] {</span>
+				&quot;org.youngmonkeys.eun.common&quot;,
+				&quot;org.youngmonkeys.eun.app&quot;
+		};
+	}
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.4.201905082037</span></div></body></html>
