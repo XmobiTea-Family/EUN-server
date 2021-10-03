@@ -25,6 +25,7 @@ public final class OperationCode {
     public static final int DestroyGameObjectRoom = 19;
     public static final int SynchronizationDataGameObjectRoom = 20;
     public static final int TransferGameObjectRoom = 21;
+    public static final int VoiceChat = 22;
 
     private OperationCode() {}
 }

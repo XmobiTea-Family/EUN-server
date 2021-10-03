@@ -11,7 +11,7 @@ public class ClientTest {
 
 	public static void main(String[] args) {
 		EzyClientConfig config = EzyClientConfig.builder()
-				.zoneName(ApplicationStartup.ZONE_APP_NAME)
+				.zoneName(ApplicationStartup.ZONE_NAME)
 				.build();
 		EzyClient client = new EzyTcpClient(config);
 		setupClient(client);

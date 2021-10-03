@@ -10,6 +10,7 @@ import lombok.var;
 import org.youngmonkeys.eun.app.event.OperationEvent;
 import org.youngmonkeys.eun.app.response.OperationResponse;
 import org.youngmonkeys.eun.common.constant.Commands;
+import org.youngmonkeys.eun.common.entity.SendParameters;
 
 import java.util.Iterator;
 import java.util.LinkedList;
@@ -34,42 +35,91 @@ public class UserService implements IUserService {
 
     @Override
     public void sendOperationResponse(@NonNull EzyUser peer, @NonNull OperationResponse response) {
-        responseFactory.newArrayResponse()
+        sendOperationResponse(peer, response, null);
+    }
+
+    @Override
+    public void sendOperationResponse(@NonNull EzyUser peer, @NonNull OperationResponse response, SendParameters sendParameters) {
+        var ezyResponse = responseFactory.newArrayResponse()
                 .command(Commands.ResponseCmd)
                 .user(peer)
-                .data(response.toData())
-                .execute();
+                .data(response.toData());
+
+        if (sendParameters != null) {
+            if (sendParameters.isUnreliable()) ezyResponse.udpTransport();
+            if (sendParameters.isEncrypted()) ezyResponse.encrypted();
+        }
+
+        ezyResponse.execute();
     }
 
     @Override
     public void sendEvent(@NonNull String userId, @NonNull OperationEvent event) {
-        responseFactory.newArrayResponse()
+        sendEvent(userId, event, null);
+    }
+
+    @Override
+    public void sendEvent(@NonNull String userId, @NonNull OperationEvent event, SendParameters sendParameters) {
+        var ezyResponse = responseFactory.newArrayResponse()
                 .command(Commands.EventCmd)
                 .username(userId)
-                .data(event.toData())
-                .execute();
+                .data(event.toData());
+
+        if (sendParameters != null) {
+            if (sendParameters.isUnreliable()) ezyResponse.udpTransport();
+            if (sendParameters.isEncrypted()) ezyResponse.encrypted();
+        }
+
+        ezyResponse.execute();
     }
 
     @Override
     public void sendEvent(@NonNull EzyUser peer, @NonNull OperationEvent event) {
-        responseFactory.newArrayResponse()
+        sendEvent(peer, event, null);
+    }
+
+    @Override
+    public void sendEvent(@NonNull EzyUser peer, @NonNull OperationEvent event, SendParameters sendParameters) {
+        var ezyResponse = responseFactory.newArrayResponse()
                 .command(Commands.EventCmd)
                 .user(peer)
-                .data(event.toData())
-                .execute();
+                .data(event.toData());
+
+        if (sendParameters != null) {
+            if (sendParameters.isUnreliable()) ezyResponse.udpTransport();
+            if (sendParameters.isEncrypted()) ezyResponse.encrypted();
+        }
+
+        ezyResponse.execute();
     }
 
     @Override
     public void sendEventToSomePeer(@NonNull Iterable<EzyUser> peerLst, @NonNull OperationEvent event) {
-        responseFactory.newArrayResponse()
+        sendEventToSomePeer(peerLst, event, null);
+    }
+
+    @Override
+    public void sendEventToSomePeer(@NonNull Iterable<EzyUser> peerLst, @NonNull OperationEvent event, SendParameters sendParameters) {
+        var ezyResponse = responseFactory.newArrayResponse()
                 .command(Commands.EventCmd)
                 .users(peerLst)
-                .data(event.toData())
-                .execute();
+                .data(event.toData());
+
+        if (sendParameters != null) {
+            if (sendParameters.isUnreliable()) ezyResponse.udpTransport();
+            if (sendParameters.isEncrypted()) ezyResponse.encrypted();
+        }
+
+        ezyResponse.execute();
     }
 
     @Override
     public void sendEventToSomePeer(@NonNull Iterator<EzyUser> peerIterator, @NonNull OperationEvent event) {
+        sendEventToSomePeer(peerIterator, event, null);
+    }
+
+    @Override
+    public void sendEventToSomePeer(@NonNull Iterator<EzyUser> peerIterator, @NonNull OperationEvent event, SendParameters sendParameters) {
         var peerLst = new LinkedList<EzyUser>();
         while (peerIterator.hasNext()) {
             peerLst.add(peerIterator.next());
@@ -77,20 +127,36 @@ public class UserService implements IUserService {
 
         if (peerLst.size() == 0) return;
 
-        sendEventToSomePeer(peerLst, event);
+        sendEventToSomePeer(peerLst, event, sendParameters);
     }
 
     @Override
     public void sendEventToSomePeerByUserIds(@NonNull Iterable<String> peerUserIdLst, @NonNull OperationEvent event) {
-        responseFactory.newArrayResponse()
+        sendEventToSomePeerByUserIds(peerUserIdLst, event, null);
+    }
+
+    @Override
+    public void sendEventToSomePeerByUserIds(@NonNull Iterable<String> peerUserIdLst, @NonNull OperationEvent event, SendParameters sendParameters) {
+        var ezyResponse = responseFactory.newArrayResponse()
                 .command(Commands.EventCmd)
                 .usernames(peerUserIdLst)
-                .data(event.toData())
-                .execute();
+                .data(event.toData());
+
+        if (sendParameters != null) {
+            if (sendParameters.isUnreliable()) ezyResponse.udpTransport();
+            if (sendParameters.isEncrypted()) ezyResponse.encrypted();
+        }
+
+        ezyResponse.execute();
     }
 
     @Override
     public void sendEventToSomePeerByUserIds(@NonNull Iterator<String> peerUserIdIterator, @NonNull OperationEvent event) {
+        sendEventToSomePeerByUserIds(peerUserIdIterator, event, null);
+    }
+
+    @Override
+    public void sendEventToSomePeerByUserIds(@NonNull Iterator<String> peerUserIdIterator, @NonNull OperationEvent event, SendParameters sendParameters) {
         var peerUserIdLst = new LinkedList<String>();
         while (peerUserIdIterator.hasNext()) {
             peerUserIdLst.add(peerUserIdIterator.next());
@@ -98,15 +164,26 @@ public class UserService implements IUserService {
 
         if (peerUserIdLst.size() == 0) return;
 
-        sendEventToSomePeerByUserIds(peerUserIdLst, event);
+        sendEventToSomePeerByUserIds(peerUserIdLst, event, sendParameters);
     }
 
     @Override
     public void sendEventToAllOnlinePeer(@NonNull OperationEvent event) {
-        responseFactory.newArrayResponse()
+        sendEventToAllOnlinePeer(event, null);
+    }
+
+    @Override
+    public void sendEventToAllOnlinePeer(@NonNull OperationEvent event, SendParameters sendParameters) {
+        var ezyResponse =         responseFactory.newArrayResponse()
                 .command(Commands.EventCmd)
                 .users(userManager.getUserList())
-                .data(event.toData())
-                .execute();
+                .data(event.toData());
+
+        if (sendParameters != null) {
+            if (sendParameters.isUnreliable()) ezyResponse.udpTransport();
+            if (sendParameters.isEncrypted()) ezyResponse.encrypted();
+        }
+
+        ezyResponse.execute();
     }
 }

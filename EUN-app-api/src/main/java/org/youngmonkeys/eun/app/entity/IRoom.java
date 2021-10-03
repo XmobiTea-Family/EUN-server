@@ -39,6 +39,7 @@ public interface IRoom {
     boolean synchronizationDataGameObject(EzyUser peer, int objectId, Object synchronizationData);
     boolean rpcGameObject(EzyUser peer, int objectId, int eunRPCCommand, Object rpcData);
     boolean transferOwnerGameObject(EzyUser peer, int objectId, int newOwnerId);
+    boolean voiceChat(EzyUser peer, int objectId, Object voiceChat);
 
     long getTsCreate();
     String getPassword();

@@ -9,16 +9,20 @@ import org.youngmonkeys.eun.app.service.IUserService;
 import org.youngmonkeys.eun.common.constant.EventCode;
 import org.youngmonkeys.eun.common.constant.ParameterCode;
 import org.youngmonkeys.eun.common.constant.PeerPropertyCode;
-import org.youngmonkeys.eun.common.entity.CustomHashtable;
-import org.youngmonkeys.eun.common.entity.RoomGameObject;
-import org.youngmonkeys.eun.common.entity.RoomOption;
-import org.youngmonkeys.eun.common.entity.RoomPlayer;
+import org.youngmonkeys.eun.common.entity.*;
 
 import java.util.*;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
 public class Room implements IRoom {
+    private static final SendParameters udpSendParameters = new SendParameters() {
+        {
+            setEncrypted(false);
+            setUnreliable(true);
+        }
+    };
+
     int ttl;
     int currentPlayerId;
     int roomId;
@@ -525,7 +529,7 @@ public class Room implements IRoom {
             });
             event.setParameters(parameters);
 
-            userService.sendEventToSomePeerByUserIds(getUserIdIterator(-1), event);
+            userService.sendEventToSomePeerByUserIds(getUserIdIterator(-1), event, udpSendParameters);
         });
 
         return true;
@@ -546,7 +550,7 @@ public class Room implements IRoom {
             });
             event.setParameters(eventParameters);
 
-            userService.sendEventToSomePeerByUserIds(getUserIdIterator(-1), event);
+            userService.sendEventToSomePeerByUserIds(getUserIdIterator(-1), event, udpSendParameters);
         });
 
         return true;
@@ -570,6 +574,28 @@ public class Room implements IRoom {
             event.setParameters(eventParameters);
 
             userService.sendEventToSomePeerByUserIds(getUserIdIterator(-1), event);
+        });
+
+        return true;
+    }
+
+    @Override
+    public boolean voiceChat(EzyUser peer, int objectId, Object voiceChatData) {
+        var userId = peer.getName();
+        var roomPlayerOption = roomPlayerLst.stream().filter(x -> x.getUserId().equals(userId)).findAny();
+
+        if (!roomPlayerOption.isPresent()) return false;
+
+        threadPool.execute(() -> {
+            var event = new OperationEvent(EventCode.OnVoiceChat);
+            var parameters = new CustomHashtable();
+            parameters.put(ParameterCode.Data, new Object[] {
+                    objectId,
+                    voiceChatData
+            });
+            event.setParameters(parameters);
+
+            userService.sendEventToSomePeerByUserIds(getUserIdIterator(roomPlayerOption.get().getPlayerId()), event, udpSendParameters);
         });
 
         return true;
