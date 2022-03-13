@@ -30,7 +30,7 @@ public class AppEntry extends EzyDefaultAppEntry {
 		builder.addProperties("EUN-common-config.properties");
 		builder.addProperties(pluginProperties);
 		builder.addProperties(getConfigFile(setting));
-		// The line below will be removed when ezyfox-server is updated to version 1.2.0
+		// The line below will be removed when ezyfox-server is updated to version 1.2.1
 		builder.scan(getScanablePackages());
 		Properties properties = builder.getProperties();
 	}

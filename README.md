@@ -2,7 +2,7 @@
 
 # Require
 
-1. Java 8 or higher
+1. Java 11 or higher
 2. Apache Maven 3.3+
 
 # Description
