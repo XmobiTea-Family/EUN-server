@@ -104,9 +104,9 @@ public class JoinOrCreateRoomRequestHandler extends RoomRequestHandler {
                             }
                         }
                     }
-                }
 
-                if (conditionTrueCount >= targetExpectedCount) break;
+                    if (conditionTrueCount >= targetExpectedCount) break;
+                }
             }
 
             if (conditionTrueCount < targetExpectedCount) continue;

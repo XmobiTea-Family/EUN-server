@@ -5,25 +5,22 @@ import com.tvd12.ezyfoxserver.entity.EzyUser;
 import lombok.NonNull;
 import lombok.var;
 import org.youngmonkeys.eun.app.controller.handler.base.RoomRequestHandler;
-import org.youngmonkeys.eun.app.request.CreateGameObjectRoomOperationRequest;
 import org.youngmonkeys.eun.app.request.OperationRequest;
+import org.youngmonkeys.eun.app.request.RpcGameObjectRoomToOperationRequest;
 import org.youngmonkeys.eun.app.response.OperationResponse;
 import org.youngmonkeys.eun.common.constant.OperationCode;
-import org.youngmonkeys.eun.common.constant.ParameterCode;
 import org.youngmonkeys.eun.common.constant.ReturnCode;
-import org.youngmonkeys.eun.common.entity.CustomHashtable;
 
 @EzySingleton
-public class CreateGameObjectRoomRequestHandler extends RoomRequestHandler {
+public class RpcGameObjectRoomToRequestHandler extends RoomRequestHandler {
     @Override
     public Integer getCode() {
-        return OperationCode.CreateGameObjectRoom;
+        return OperationCode.RpcGameObjectRoomTo;
     }
 
     @Override
     public OperationResponse handle(@NonNull EzyUser peer, @NonNull OperationRequest operationRequest) {
-        var request = requestConverterService.createOperationRequest(operationRequest, CreateGameObjectRoomOperationRequest.class);
-
+        var request = requestConverterService.createOperationRequest(operationRequest, RpcGameObjectRoomToOperationRequest.class);
         if (request == null || !request.isValidRequest()) {
             return newInvalidRequestParameters(operationRequest);
         }
@@ -36,15 +33,8 @@ public class CreateGameObjectRoomRequestHandler extends RoomRequestHandler {
 
         var response = new OperationResponse(operationRequest);
 
-        var roomGameObject = currentRoom.createGameObject(peer, request.getPrefabPath(), request.getInitializeData(), request.getSynchronizationData(), request.getCustomGameObjectProperties());
-        if (roomGameObject != null) {
-            response.setReturnCode(ReturnCode.Ok);
-
-            var parameters = new CustomHashtable();
-            parameters.put(ParameterCode.Data, roomGameObject.toData());
-
-            response.setParameters(parameters);
-        }
+        var answer = currentRoom.rpcGameObjectTo(peer, request.getObjectId(), request.getEunRPCCommand(), request.getRpcData(), request.getTargetPlayerIds());
+        if (answer) response.setReturnCode(ReturnCode.Ok);
         else response.setReturnCode(ReturnCode.NotOk);
 
         return response;

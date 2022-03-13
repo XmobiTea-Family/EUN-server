@@ -1,5 +1,6 @@
 package org.youngmonkeys.eun.app.entity;
 
+import com.tvd12.ezyfox.entity.EzyArray;
 import com.tvd12.ezyfox.io.EzyStrings;
 import com.tvd12.ezyfoxserver.entity.EzyUser;
 import lombok.NonNull;
@@ -279,8 +280,8 @@ public class Room implements IRoom {
                 }
             }
             else {
-                if (!this.customRoomProperties.containsKey(key))
-                    this.customRoomProperties.put(key, value);
+                if (!this.customRoomProperties.containsKey(key)) this.customRoomProperties.put(key, value);
+                else this.customRoomProperties.replace(key, value);
             }
         }
 
@@ -462,7 +463,7 @@ public class Room implements IRoom {
     }
 
     @Override
-    public RoomGameObject createGameObject(EzyUser peer, String prefabPath, Object initializeData, Object synchronizationData) {
+    public RoomGameObject createGameObject(EzyUser peer, String prefabPath, Object initializeData, Object synchronizationData, CustomHashtable customGameObjectProperties) {
         var userId = peer.getName();
 
         var roomPlayerOption = roomPlayerLst.stream().filter(x -> x.getUserId().equals(userId)).findAny();
@@ -477,6 +478,7 @@ public class Room implements IRoom {
         roomGameObject.setInitializeData(initializeData);
         roomGameObject.setPrefabPath(prefabPath);
         roomGameObject.setSynchronizationData(synchronizationData);
+        roomGameObject.setCustomProperties(customGameObjectProperties == null ? new CustomHashtable() : customGameObjectProperties);
 
         gameObjectDic.put(roomGameObject.getObjectId(), roomGameObject);
 
@@ -490,6 +492,42 @@ public class Room implements IRoom {
         });
 
         return roomGameObject;
+    }
+
+    @Override
+    public boolean setCustomGameObjectProperties(EzyUser peer, int objectId, CustomHashtable customGameObjectProperties) {
+        var roomGameObject = gameObjectDic.getOrDefault(objectId, null);
+        if (roomGameObject == null) return false;
+
+        var customProperties = roomGameObject.getCustomProperties();
+        var keySet = customGameObjectProperties.keySet();
+        for (var key : keySet) {
+            var value = customGameObjectProperties.get(key);
+
+            if (value == null) {
+                if (customProperties.containsKey(key)) {
+                    customProperties.remove(key);
+                }
+            }
+            else {
+                if (!customProperties.containsKey(key))
+                    customProperties.put(key, value);
+                else customProperties.replace(key, value);
+            }
+        }
+
+        threadPool.execute(() -> {
+            var onCustomGameObjectPropertiesChangeEvent = new OperationEvent(EventCode.OnCustomGameObjectPropertiesChange);
+            var customGameObjectPropertiesChangeParameters = new CustomHashtable();
+            customGameObjectPropertiesChangeParameters.put(ParameterCode.Data, new Object[] {
+                    objectId, customGameObjectProperties.toData()
+            });
+            onCustomGameObjectPropertiesChangeEvent.setParameters(customGameObjectPropertiesChangeParameters);
+
+            userService.sendEventToSomePeerByUserIds(getUserIdIterator(-1), onCustomGameObjectPropertiesChangeEvent);
+        });
+
+        return true;
     }
 
     @Override
@@ -518,6 +556,12 @@ public class Room implements IRoom {
         var roomGameObject = gameObjectDic.getOrDefault(objectId, null);
         if (roomGameObject == null) return false;
 
+        var userId = peer.getName();
+        var roomPlayerOption = roomPlayerLst.stream().filter(x -> x.getUserId().equals(userId)).findAny();
+        if (!roomPlayerOption.isPresent()) return false;
+
+        var roomPlayer = roomPlayerOption.get();
+
         roomGameObject.setSynchronizationData(synchronizationData);
 
         threadPool.execute(() -> {
@@ -529,14 +573,14 @@ public class Room implements IRoom {
             });
             event.setParameters(parameters);
 
-            userService.sendEventToSomePeerByUserIds(getUserIdIterator(-1), event, udpSendParameters);
+            userService.sendEventToSomePeerByUserIds(getUserIdIterator(roomPlayerOption.get().getPlayerId()), event, udpSendParameters);
         });
 
         return true;
     }
 
     @Override
-    public boolean rpcGameObject(EzyUser peer, int objectId, int eunRPCCommand, Object rpcData) {
+    public boolean rpcGameObject(EzyUser peer, int objectId, int eunRPCCommand, Object rpcData, int ezyTargets) {
         var roomGameObject = gameObjectDic.getOrDefault(objectId, null);
         if (roomGameObject == null) return false;
 
@@ -550,7 +594,47 @@ public class Room implements IRoom {
             });
             event.setParameters(eventParameters);
 
-            userService.sendEventToSomePeerByUserIds(getUserIdIterator(-1), event, udpSendParameters);
+            if (ezyTargets == EzyTargets.Others.getValue()) {
+                var userId = peer.getName();
+
+                userService.sendEventToSomePeerByUserIds(getUserIdIterable(userId), event, udpSendParameters);
+            }
+            else if (ezyTargets == EzyTargets.LeaderClient.getValue()) {
+                if (!EzyStrings.isNoContent(leaderClientUserId)) {
+                    userService.sendEvent(leaderClientUserId, event, udpSendParameters);
+                }
+            }
+            else {
+                userService.sendEventToSomePeerByUserIds(getUserIdIterator(-1), event, udpSendParameters);
+            }
+        });
+
+        return true;
+    }
+
+    @Override
+    public boolean rpcGameObjectTo(EzyUser peer, int objectId, int eunRPCCommand, Object rpcData, EzyArray targetPlayerIds) {
+        var roomGameObject = gameObjectDic.getOrDefault(objectId, null);
+        if (roomGameObject == null) return false;
+
+        threadPool.execute(() -> {
+            var event = new OperationEvent(EventCode.OnRpcGameObject);
+            var eventParameters = new CustomHashtable();
+            eventParameters.put(ParameterCode.Data, new Object[] {
+                    objectId,
+                    eunRPCCommand,
+                    rpcData
+            });
+            event.setParameters(eventParameters);
+
+            for (var i = 0; i < targetPlayerIds.size(); i++) {
+                int targetPlayerId = targetPlayerIds.get(i);
+                var roomPlayerOption = roomPlayerLst.stream().filter(x -> x.getPlayerId() == targetPlayerId).findAny();
+
+                if (roomPlayerOption.isPresent()) {
+                    userService.sendEvent(roomPlayerOption.get().getUserId(), event, udpSendParameters);
+                }
+            }
         });
 
         return true;
@@ -670,8 +754,8 @@ public class Room implements IRoom {
     }
 
     @Override
-    public Iterator<String> getUserIdIterator(int excludeUserId) {
-        return getUserIdIterable(excludeUserId).iterator();
+    public Iterator<String> getUserIdIterator(int excludePlayerId) {
+        return getUserIdIterable(excludePlayerId).iterator();
     }
 
     @Override
@@ -679,11 +763,22 @@ public class Room implements IRoom {
         return lobby;
     }
 
-    private Iterable<String> getUserIdIterable(int excludeUserId) {
+    private Iterable<String> getUserIdIterable(int excludePlayerId) {
         var userIdLst = new LinkedList<String>();
 
         for (var roomPlayer : roomPlayerLst) {
-            if (roomPlayer.getPlayerId() != excludeUserId) userIdLst.add(roomPlayer.getUserId());
+            if (roomPlayer.getPlayerId() != excludePlayerId) userIdLst.add(roomPlayer.getUserId());
+        }
+
+        return userIdLst;
+    }
+
+    private Iterable<String> getUserIdIterable(String excludeUserId) {
+        var userIdLst = new LinkedList<String>();
+
+        for (var roomPlayer : roomPlayerLst) {
+            var userId = roomPlayer.getUserId();
+            if (!userId.equals(excludeUserId)) userIdLst.add(userId);
         }
 
         return userIdLst;

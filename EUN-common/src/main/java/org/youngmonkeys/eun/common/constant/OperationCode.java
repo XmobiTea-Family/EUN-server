@@ -15,7 +15,7 @@ public final class OperationCode {
     public static final int LeaveRoom = 11;             // leave room
 
     public static final int ChangeLeaderClient = 12;    // change leader client room
-    public static final int ChangeRoomInfo = 13;
+    public static final int ChangeRoomInfo = 13;        // change the room info
     public static final int SubscriberChatAll = 14;
     public static final int SubscriberChatLobby = 15;
     public static final int ChangePlayerCustomProperties = 16;
@@ -26,6 +26,8 @@ public final class OperationCode {
     public static final int SynchronizationDataGameObjectRoom = 20;
     public static final int TransferGameObjectRoom = 21;
     public static final int VoiceChat = 22;
+    public static final int RpcGameObjectRoomTo = 23;
+    public static final int ChangeGameObjectCustomProperties = 24;
 
     private OperationCode() {}
 }

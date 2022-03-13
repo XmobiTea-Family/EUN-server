@@ -9,6 +9,7 @@ public class RoomGameObject {
     String prefabPath;
     Object synchronizationData;
     Object initializeData;
+    CustomHashtable customProperties;
 
     public Object toData() {
         return new Object[]{
@@ -16,7 +17,8 @@ public class RoomGameObject {
                 ownerId,
                 prefabPath,
                 synchronizationData,
-                initializeData
+                initializeData,
+                customProperties.toData()
         };
     }
 }

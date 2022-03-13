@@ -5,13 +5,14 @@ import com.tvd12.ezyfox.bean.annotation.EzySingleton;
 import com.tvd12.ezyfox.util.EzyLoggable;
 import lombok.NonNull;
 import lombok.var;
+import org.youngmonkeys.eun.app.controller.handler.base.IWaitForEzyInitDone;
 import org.youngmonkeys.eun.app.entity.DisconnectRoomInfo;
 
 import java.util.Hashtable;
 import java.util.LinkedList;
 
 @EzySingleton
-public class DisconnectRoomService extends EzyLoggable implements IDisconnectRoomService {
+public class DisconnectRoomService extends EzyLoggable implements IDisconnectRoomService, IWaitForEzyInitDone {
     @EzyAutoBind
     private ITimerService timerService;
 
@@ -62,18 +63,10 @@ public class DisconnectRoomService extends EzyLoggable implements IDisconnectRoo
 
     public DisconnectRoomService() {
         disconnectRoomDic = new Hashtable<>();
+    }
 
-        var thread = new Thread(() -> {
-            try {
-                Thread.sleep(300);
-
-                timerService.subscriberEverySecond(() -> onEverySecond());
-            }
-            catch (Exception ex) {
-                logger.error("DisconnectRoomService", ex);
-            }
-        });
-
-        thread.start();
+    @Override
+    public void config() {
+        timerService.subscriberEverySecond(() -> onEverySecond());
     }
 }

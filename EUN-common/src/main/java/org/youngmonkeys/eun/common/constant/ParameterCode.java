@@ -33,6 +33,9 @@ public final class ParameterCode {
     public static final int ObjectId = 28;
     public static final int EzyRPCCommand = 29;
     public static final int RpcData = 30;
+    public static final int EzyTargets = 31;
+    public static final int TargetPlayerIds = 32;
+    public static final int CustomGameObjectProperties = 33;
 
     private ParameterCode() {}
 }

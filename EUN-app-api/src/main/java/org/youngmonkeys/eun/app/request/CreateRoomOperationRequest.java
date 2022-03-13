@@ -34,7 +34,7 @@ public class CreateRoomOperationRequest extends OperationRequest {
     public boolean isValidRequest() {
         if (!super.isValidRequest()) return false;
 
-        if (maxPlayer < 2) return false;
+        if (maxPlayer < 1) return false;
 
         return true;
     }

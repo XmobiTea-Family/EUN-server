@@ -14,4 +14,8 @@ public class OperationRequest {
     public boolean isValidRequest() {
         return isValid;
     }
+
+    public String toString() {
+        return "" + operationCode + " " + requestId + " " + parameters.toData();
+    }
 }

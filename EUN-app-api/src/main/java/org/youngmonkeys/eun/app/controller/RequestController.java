@@ -8,6 +8,7 @@ import com.tvd12.ezyfox.core.annotation.EzyRequestController;
 import com.tvd12.ezyfox.util.EzyLoggable;
 import com.tvd12.ezyfoxserver.entity.EzyUser;
 import lombok.var;
+import org.youngmonkeys.eun.app.controller.handler.base.IWaitForEzyInitDone;
 import org.youngmonkeys.eun.common.constant.Commands;
 import org.youngmonkeys.eun.app.controller.handler.base.IRequestHandler;
 import org.youngmonkeys.eun.app.request.base.Request;
@@ -24,7 +25,7 @@ import java.util.concurrent.Executors;
 
 @EzySingleton
 @EzyRequestController
-public final class RequestController extends EzyLoggable {
+public final class RequestController extends EzyLoggable implements IWaitForEzyInitDone {
     @EzyAutoBind
     private IUserService userService;
 
@@ -44,10 +45,16 @@ public final class RequestController extends EzyLoggable {
             var operationRequest = requestConverterService.createOperationRequest(request);
             if (operationRequest == null) return;
 
-            logger.info("[RECV] " + operationRequest);
+            if (operationRequest.getRequestId() != -1) {
+                logger.info("[RECV] " + operationRequest.toString());
+            }
 
             var requestHandler = getRequestHandler(operationRequest.getOperationCode());
-            if (requestHandler == null) return;
+
+            if (requestHandler == null) {
+                logger.error(operationRequest.getOperationCode() + " is null request ");
+                return;
+            }
 
             OperationResponse operationResponse;
 
@@ -75,20 +82,15 @@ public final class RequestController extends EzyLoggable {
     public RequestController() {
         threadPool = Executors.newFixedThreadPool(32);
         requestHandlerDic = new Hashtable<>();
+    }
 
-        var thread = new Thread(() -> {
-            try {
-                Thread.sleep(150);
-                List<IRequestHandler> handlers = beanContext.getSingletonsOf(IRequestHandler.class);
-                for (var handler : handlers) {
-                    if (handler.getCode() != null) requestHandlerDic.put(handler.getCode(), handler);
-                }
-            }
-            catch (Exception ex) {
-                logger.error("RequestController", ex);
-            }
-        });
+    @Override
+    public void config() {
+        List<IRequestHandler> handlers = beanContext.getSingletonsOf(IRequestHandler.class);
+        for (var handler : handlers) {
+            if (handler.getCode() != null) requestHandlerDic.put(handler.getCode(), handler);
+        }
 
-        thread.start();
+        logger.info("RequestController handler count " + handlers.size() + "/" + requestHandlerDic.size());
     }
 }

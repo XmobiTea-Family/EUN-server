@@ -17,6 +17,7 @@ public final class EventCode {
     public static final int OnRpcGameObject = 13;
     public static final int OnTransferOwnerGameObject = 14;
     public static final int OnVoiceChat = 15;
+    public static final int OnCustomGameObjectPropertiesChange = 16;
 
     private EventCode() {}
 }

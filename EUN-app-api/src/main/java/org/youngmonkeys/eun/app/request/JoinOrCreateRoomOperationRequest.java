@@ -10,7 +10,7 @@ import java.util.List;
 @Data
 public class JoinOrCreateRoomOperationRequest extends OperationRequest {
     @EzyDataMember(code = ParameterCode.MaxPlayer)
-    byte maxPlayer;
+    int maxPlayer;
 
     @EzyDataMember(code = ParameterCode.TargetExpectedCount, isOptional = true)
     int targetExpectedCount;

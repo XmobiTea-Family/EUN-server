@@ -1,14 +1,15 @@
 package org.youngmonkeys.eun.app.service;
 
 import com.tvd12.ezyfox.bean.annotation.EzySingleton;
+import com.tvd12.ezyfox.entity.EzyHashMap;
 import com.tvd12.ezyfox.entity.EzyObject;
+import com.tvd12.ezyfox.factory.EzyEntityFactory;
 import com.tvd12.ezyfox.util.EzyLoggable;
-import lombok.NonNull;
-import lombok.var;
 import org.youngmonkeys.eun.app.entity.EzyDataMember;
 import org.youngmonkeys.eun.app.request.OperationRequest;
 import org.youngmonkeys.eun.app.request.base.Request;
 import org.youngmonkeys.eun.common.entity.CustomHashtable;
+import lombok.*;
 
 @EzySingleton
 public class RequestConverterService extends EzyLoggable implements IRequestConverterService {
@@ -29,7 +30,16 @@ public class RequestConverterService extends EzyLoggable implements IRequestConv
                         var value = parameters.get(ann.code());
                         if (value != null) {
                             field.setAccessible(true);
-                            field.set(object, value);
+
+                            if (value instanceof EzyHashMap && field.getType().equals(CustomHashtable.class)) {
+                                var valueEzyHashMap = (EzyHashMap)value;
+
+                                var ezyObject = EzyEntityFactory.newObject();
+                                ezyObject.putAll(valueEzyHashMap.toMap());
+
+                                field.set(object, new CustomHashtable(ezyObject));
+                            }
+                            else field.set(object, value);
                         }
                     }
                     else {
@@ -37,7 +47,16 @@ public class RequestConverterService extends EzyLoggable implements IRequestConv
                             var value = parameters.get(ann.code());
 
                             field.setAccessible(true);
-                            field.set(object, value);
+
+                            if ((value != null) && value instanceof EzyHashMap && field.getType().equals(CustomHashtable.class)) {
+                                var valueEzyHashMap = (EzyHashMap)value;
+
+                                var ezyObject = EzyEntityFactory.newObject();
+                                ezyObject.putAll(valueEzyHashMap.toMap());
+
+                                field.set(object, new CustomHashtable(ezyObject));
+                            }
+                            else field.set(object, value);
                         }
                         else {
                             isValidRequest = false;
@@ -46,6 +65,10 @@ public class RequestConverterService extends EzyLoggable implements IRequestConv
                     }
                 }
             }
+
+            object.setOperationCode(operationRequest.getOperationCode());
+            object.setRequestId(operationRequest.getRequestId());
+            object.setParameters(operationRequest.getParameters());
 
             object.setValid(isValidRequest);
             return object;

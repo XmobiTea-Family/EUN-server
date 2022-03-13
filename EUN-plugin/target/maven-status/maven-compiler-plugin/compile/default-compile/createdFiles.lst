@@ -1,5 +1,0 @@
-org\youngmonkeys\eun\plugin\config\PluginConfig.class
-org\youngmonkeys\eun\plugin\PluginEntryLoader.class
-org\youngmonkeys\eun\plugin\controller\UserLoginController.class
-org\youngmonkeys\eun\plugin\PluginEntry.class
-org\youngmonkeys\eun\plugin\controller\ServerReadyController.class

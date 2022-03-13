@@ -36,7 +36,7 @@ public class JoinLobbyRequestHandler extends LobbyRequestHandler {
 
         currentLobby = lobbyService.getLobby(request.getLobbyId());
         currentLobby.joinLobby(userId, peer);
-        if (currentLobby != null) peer.setProperty(PeerPropertyCode.Lobby, currentLobby);
+        peer.setProperty(PeerPropertyCode.Lobby, currentLobby);
 
         return response;
     }

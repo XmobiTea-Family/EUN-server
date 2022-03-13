@@ -48,19 +48,26 @@ public class ApplicationStartup {
 				.address("0.0.0.0") // loopback address, default 0.0.0.0
 				.codecCreator(JacksonCodecCreator.class) // encoder/decoder creator, default JacksonCodecCreator
 				.maxFrameSize(32678) // max frame size, default 32768
-				.port(2208) // port, default 3005
+				.port(22208) // port, default 3005
 				.writerThreadPoolSize(8) // thread pool size for socket writer, default 8
 				.build();
 
 		EzyUdpSettingBuilder udpSettingBuilder = new EzyUdpSettingBuilder()
 				.active(true)
+				.port(22611)
 				.address("0.0.0.0")
 				.maxRequestSize(2048)
 				;
 
+		EzySocketSettingBuilder socketBuilder = new EzySocketSettingBuilder()
+				.active(true)
+				.port(23005)
+				.maxRequestSize(2048);
+
 		EzySimpleSettings settings = new EzySettingsBuilder()
 				.zone(zoneSettingBuilder.build())
 				.udp(udpSettingBuilder.build())
+				.socket(socketBuilder.build())
 				.websocket(webSocketSetting)
 				.build();
 		

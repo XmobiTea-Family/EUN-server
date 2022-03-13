@@ -26,6 +26,7 @@ public class SubscriberChatAllRequestHandler extends RequestHandler {
     @Override
     public OperationResponse handle(@NonNull EzyUser peer, @NonNull OperationRequest operationRequest) {
         var request = requestConverterService.createOperationRequest(operationRequest, SubscriberChatAllOperationRequest.class);
+
         if (request == null || !request.isValidRequest()) {
             return newInvalidRequestParameters(operationRequest);
         }

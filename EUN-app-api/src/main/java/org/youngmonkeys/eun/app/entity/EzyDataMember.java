@@ -6,6 +6,6 @@ import java.lang.annotation.*;
 @Retention(RetentionPolicy.RUNTIME)
 @Target({ElementType.FIELD})
 public @interface EzyDataMember {
-    int code() default 0;
+    int code();
     boolean isOptional() default false;
 }

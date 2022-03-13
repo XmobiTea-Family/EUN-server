@@ -1,11 +1,9 @@
 package org.youngmonkeys.eun.app.entity;
 
+import com.tvd12.ezyfox.entity.EzyArray;
 import com.tvd12.ezyfoxserver.entity.EzyUser;
 import lombok.NonNull;
-import org.youngmonkeys.eun.common.entity.CustomHashtable;
-import org.youngmonkeys.eun.common.entity.RoomGameObject;
-import org.youngmonkeys.eun.common.entity.RoomOption;
-import org.youngmonkeys.eun.common.entity.RoomPlayer;
+import org.youngmonkeys.eun.common.entity.*;
 
 import java.util.Iterator;
 import java.util.List;
@@ -34,17 +32,19 @@ public interface IRoom {
     boolean setTtl(EzyUser peer, int ttl);
     boolean setCustomPlayerProperties(EzyUser peer, int playerId, CustomHashtable customPlayerProperties);
 
-    RoomGameObject createGameObject(EzyUser peer, String prefabPath, Object initializeData, Object synchronizationData);
+    RoomGameObject createGameObject(EzyUser peer, String prefabPath, Object initializeData, Object synchronizationData, CustomHashtable customGameObjectProperties);
+    boolean setCustomGameObjectProperties(EzyUser peer, int objectId, CustomHashtable customGameObjectProperties);
     boolean destroyGameObject(EzyUser peer, int objectId);
     boolean synchronizationDataGameObject(EzyUser peer, int objectId, Object synchronizationData);
-    boolean rpcGameObject(EzyUser peer, int objectId, int eunRPCCommand, Object rpcData);
+    boolean rpcGameObject(EzyUser peer, int objectId, int eunRPCCommand, Object rpcData, int ezyTargets);
+    boolean rpcGameObjectTo(EzyUser peer, int objectId, int eunRPCCommand, Object rpcData, EzyArray targetPlayerIds);
     boolean transferOwnerGameObject(EzyUser peer, int objectId, int newOwnerId);
     boolean voiceChat(EzyUser peer, int objectId, Object voiceChat);
 
     long getTsCreate();
     String getPassword();
     int getTtl();
-    Iterator<String> getUserIdIterator(int excludeUserId);
+    Iterator<String> getUserIdIterator(int excludePlayerId);
     ILobby getLobby();
 
     Object[] toFullLobbyData();

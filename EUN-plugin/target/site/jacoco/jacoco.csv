@@ -1,6 +1,0 @@
-GROUP,PACKAGE,CLASS,INSTRUCTION_MISSED,INSTRUCTION_COVERED,BRANCH_MISSED,BRANCH_COVERED,LINE_MISSED,LINE_COVERED,COMPLEXITY_MISSED,COMPLEXITY_COVERED,METHOD_MISSED,METHOD_COVERED
-EUN-plugin,org.youngmonkeys.eun.plugin,PluginEntryLoader,7,0,0,0,2,0,2,0,2,0
-EUN-plugin,org.youngmonkeys.eun.plugin,PluginEntry,57,0,0,0,15,0,6,0,6,0
-EUN-plugin,org.youngmonkeys.eun.plugin.controller,ServerReadyController,8,0,0,0,3,0,2,0,2,0
-EUN-plugin,org.youngmonkeys.eun.plugin.controller,UserLoginController,10,0,0,0,3,0,2,0,2,0
-EUN-plugin,org.youngmonkeys.eun.plugin.config,PluginConfig,83,0,14,0,2,0,14,0,7,0

@@ -33,7 +33,7 @@ public class RpcGameObjectRoomRequestHandler extends RoomRequestHandler {
 
         var response = new OperationResponse(operationRequest);
 
-        var answer = currentRoom.rpcGameObject(peer, request.getObjectId(), request.getEunRPCCommand(), request.getRpcData());
+        var answer = currentRoom.rpcGameObject(peer, request.getObjectId(), request.getEunRPCCommand(), request.getRpcData(), request.getEzyTargets());
         if (answer) response.setReturnCode(ReturnCode.Ok);
         else response.setReturnCode(ReturnCode.NotOk);
 

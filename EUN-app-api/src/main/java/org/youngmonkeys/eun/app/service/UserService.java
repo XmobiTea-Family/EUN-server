@@ -46,7 +46,7 @@ public class UserService implements IUserService {
                 .data(response.toData());
 
         if (sendParameters != null) {
-            if (sendParameters.isUnreliable()) ezyResponse.udpTransport();
+            if (sendParameters.isUnreliable() && peer.getSession().getUdpClientAddress() != null) ezyResponse.udpTransport();
             if (sendParameters.isEncrypted()) ezyResponse.encrypted();
         }
 
@@ -66,7 +66,7 @@ public class UserService implements IUserService {
                 .data(event.toData());
 
         if (sendParameters != null) {
-            if (sendParameters.isUnreliable()) ezyResponse.udpTransport();
+//            if (sendParameters.isUnreliable()) ezyResponse.udpTransport();
             if (sendParameters.isEncrypted()) ezyResponse.encrypted();
         }
 
@@ -86,7 +86,7 @@ public class UserService implements IUserService {
                 .data(event.toData());
 
         if (sendParameters != null) {
-            if (sendParameters.isUnreliable()) ezyResponse.udpTransport();
+            if (sendParameters.isUnreliable() && peer.getSession().getUdpClientAddress() != null) ezyResponse.udpTransport();
             if (sendParameters.isEncrypted()) ezyResponse.encrypted();
         }
 
@@ -106,7 +106,7 @@ public class UserService implements IUserService {
                 .data(event.toData());
 
         if (sendParameters != null) {
-            if (sendParameters.isUnreliable()) ezyResponse.udpTransport();
+//            if (sendParameters.isUnreliable()) ezyResponse.udpTransport();
             if (sendParameters.isEncrypted()) ezyResponse.encrypted();
         }
 
@@ -143,7 +143,7 @@ public class UserService implements IUserService {
                 .data(event.toData());
 
         if (sendParameters != null) {
-            if (sendParameters.isUnreliable()) ezyResponse.udpTransport();
+//            if (sendParameters.isUnreliable()) ezyResponse.udpTransport();
             if (sendParameters.isEncrypted()) ezyResponse.encrypted();
         }
 
@@ -180,7 +180,7 @@ public class UserService implements IUserService {
                 .data(event.toData());
 
         if (sendParameters != null) {
-            if (sendParameters.isUnreliable()) ezyResponse.udpTransport();
+//            if (sendParameters.isUnreliable()) ezyResponse.udpTransport();
             if (sendParameters.isEncrypted()) ezyResponse.encrypted();
         }
 
