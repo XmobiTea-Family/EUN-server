@@ -8,6 +8,7 @@ import lombok.var;
 import org.youngmonkeys.eun.app.event.OperationEvent;
 import org.youngmonkeys.eun.app.service.IUserService;
 import org.youngmonkeys.eun.common.constant.EventCode;
+import org.youngmonkeys.eun.common.constant.EzyTargets;
 import org.youngmonkeys.eun.common.constant.ParameterCode;
 import org.youngmonkeys.eun.common.constant.PeerPropertyCode;
 import org.youngmonkeys.eun.common.entity.*;
@@ -594,12 +595,12 @@ public class Room implements IRoom {
             });
             event.setParameters(eventParameters);
 
-            if (ezyTargets == EzyTargets.Others.getValue()) {
+            if (ezyTargets == EzyTargets.Others) {
                 var userId = peer.getName();
 
                 userService.sendEventToSomePeerByUserIds(getUserIdIterable(userId), event, udpSendParameters);
             }
-            else if (ezyTargets == EzyTargets.LeaderClient.getValue()) {
+            else if (ezyTargets == EzyTargets.LeaderClient) {
                 if (!EzyStrings.isNoContent(leaderClientUserId)) {
                     userService.sendEvent(leaderClientUserId, event, udpSendParameters);
                 }

@@ -1,1 +1,6 @@
 .idea/
+EUN-startup/target/
+EUN-plugin/target/
+EUN-common/target/
+EUN-app-api/target/
+EUN-app-entry/target/
