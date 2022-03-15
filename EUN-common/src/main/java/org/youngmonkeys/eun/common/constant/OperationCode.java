@@ -29,5 +29,36 @@ public final class OperationCode {
     public static final int RpcGameObjectRoomTo = 23;
     public static final int ChangeGameObjectCustomProperties = 24;
 
+    public static String getOperationName(int operationCode)
+    {
+        if (SyncTs == operationCode) return "SyncTs";
+        if (GetLobbyStatsLst == operationCode) return "GetLobbyStatsLst";
+        if (GetCurrentLobbyStats == operationCode) return "GetCurrentLobbyStats";
+        if (JoinLobby == operationCode) return "JoinLobby";
+        if (LeaveLobby == operationCode) return "LeaveLobby";
+        if (ChatAll == operationCode) return "ChatAll";
+        if (ChatLobby == operationCode) return "ChatLobby";
+        if (ChatRoom == operationCode) return "ChatRoom";
+        if (CreateRoom == operationCode) return "CreateRoom";
+        if (JoinOrCreateRoom == operationCode) return "JoinOrCreateRoom";
+        if (JoinRoom == operationCode) return "JoinRoom";
+        if (LeaveRoom == operationCode) return "LeaveRoom";
+        if (ChangeLeaderClient == operationCode) return "ChangeLeaderClient";
+        if (ChangeRoomInfo == operationCode) return "ChangeRoomInfo";
+        if (SubscriberChatAll == operationCode) return "SubscriberChatAll";
+        if (SubscriberChatLobby == operationCode) return "SubscriberChatLobby";
+        if (ChangePlayerCustomProperties == operationCode) return "ChangePlayerCustomProperties";
+        if (RpcGameObjectRoom == operationCode) return "RpcGameObjectRoom";
+        if (CreateGameObjectRoom == operationCode) return "CreateGameObjectRoom";
+        if (DestroyGameObjectRoom == operationCode) return "DestroyGameObjectRoom";
+        if (SynchronizationDataGameObjectRoom == operationCode) return "SynchronizationDataGameObjectRoom";
+        if (TransferGameObjectRoom == operationCode) return "TransferGameObjectRoom";
+        if (VoiceChat == operationCode) return "VoiceChat";
+        if (RpcGameObjectRoomTo == operationCode) return "RpcGameObjectRoomTo";
+        if (ChangeGameObjectCustomProperties == operationCode) return "ChangeGameObjectCustomProperties";
+
+        return "Invalid";
+    }
+
     private OperationCode() {}
 }

@@ -1,5 +1,6 @@
 package org.youngmonkeys.eun.app.entity;
 
+import com.tvd12.ezyfox.util.EzyLoggable;
 import com.tvd12.ezyfoxserver.entity.EzyUser;
 import lombok.NonNull;
 import lombok.var;
@@ -10,7 +11,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Vector;
 
-public class Lobby implements ILobby {
+public class Lobby extends EzyLoggable implements ILobby {
     private Hashtable<String, EzyUser> peerDic;
     private Hashtable<Integer, IRoom> roomDic;
 
@@ -35,8 +36,7 @@ public class Lobby implements ILobby {
 
     @Override
     public boolean joinLobby(@NonNull String userId, @NonNull EzyUser peer) {
-        if (peerDic.containsKey(userId)) peerDic.replace(userId, peer);
-        else peerDic.put(userId, peer);
+        peerDic.put(userId, peer);
 
         return true;
     }

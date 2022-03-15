@@ -87,9 +87,8 @@ public class RequestConverterService extends EzyLoggable implements IRequestConv
 
             var data = request.getData();
             operationRequest.setOperationCode(data.get(0));
-            var parameters1 = data.get(1, EzyObject.class);
-            var parameters = new CustomHashtable(parameters1);
-            operationRequest.setParameters(parameters != null ? parameters : new CustomHashtable());
+
+            operationRequest.setParameters(data.size() > 1 ?  new CustomHashtable(data.get(1, EzyObject.class)) : new CustomHashtable());
             operationRequest.setRequestId(data.size() > 2 ? data.get(2) : -1);
 
             return operationRequest;

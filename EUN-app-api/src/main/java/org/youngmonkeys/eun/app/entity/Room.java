@@ -2,6 +2,7 @@ package org.youngmonkeys.eun.app.entity;
 
 import com.tvd12.ezyfox.entity.EzyArray;
 import com.tvd12.ezyfox.io.EzyStrings;
+import com.tvd12.ezyfox.util.EzyLoggable;
 import com.tvd12.ezyfoxserver.entity.EzyUser;
 import lombok.NonNull;
 import lombok.var;
@@ -17,7 +18,7 @@ import java.util.*;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
-public class Room implements IRoom {
+public class Room extends EzyLoggable implements IRoom {
     private static final SendParameters udpSendParameters = new SendParameters() {
         {
             setEncrypted(false);
@@ -210,8 +211,6 @@ public class Room implements IRoom {
         peer.setProperty(PeerPropertyCode.RoomPlayer, roomPlayer);
 
         threadPool.execute(() -> {
-            System.out.println("userService send OnJoinRoom");
-
             var onJoinRoomEvent = new OperationEvent(EventCode.OnJoinRoom);
             var joinRoomParameters = new CustomHashtable();
             joinRoomParameters.put(ParameterCode.Data, toFullData());

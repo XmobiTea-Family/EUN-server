@@ -1,11 +1,8 @@
 package org.youngmonkeys.eun.app.response;
 
 import lombok.Data;
-import lombok.var;
 import org.youngmonkeys.eun.app.request.OperationRequest;
 import org.youngmonkeys.eun.common.entity.CustomHashtable;
-
-import java.util.LinkedList;
 
 @Data
 public class OperationResponse {

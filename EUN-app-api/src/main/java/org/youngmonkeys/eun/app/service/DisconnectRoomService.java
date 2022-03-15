@@ -20,8 +20,7 @@ public class DisconnectRoomService extends EzyLoggable implements IDisconnectRoo
 
     @Override
     public boolean addDisconnectRoom(@NonNull String userId, @NonNull DisconnectRoomInfo disconnectRoomInfo) {
-        if (disconnectRoomDic.containsKey(userId)) disconnectRoomDic.replace(userId, disconnectRoomInfo);
-        else disconnectRoomDic.put(userId, disconnectRoomInfo);
+        disconnectRoomDic.put(userId, disconnectRoomInfo);
 
         return true;
     }

@@ -1,6 +1,7 @@
 package org.youngmonkeys.eun.app.request;
 
 import lombok.*;
+import org.youngmonkeys.eun.common.constant.OperationCode;
 import org.youngmonkeys.eun.common.entity.CustomHashtable;
 
 @Data
@@ -15,7 +16,8 @@ public class OperationRequest {
         return isValid;
     }
 
+    @Override
     public String toString() {
-        return "" + operationCode + " " + requestId + " " + parameters.toData();
+        return "" + OperationCode.getOperationName(operationCode) + " " + requestId + " " + parameters.toString();
     }
 }

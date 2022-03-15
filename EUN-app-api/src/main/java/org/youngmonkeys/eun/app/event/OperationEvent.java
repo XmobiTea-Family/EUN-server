@@ -1,10 +1,7 @@
 package org.youngmonkeys.eun.app.event;
 
 import lombok.Data;
-import lombok.var;
 import org.youngmonkeys.eun.common.entity.CustomHashtable;
-
-import java.util.LinkedList;
 
 @Data
 public class OperationEvent {

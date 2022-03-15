@@ -5,7 +5,8 @@ import com.tvd12.ezyfox.entity.EzyObject;
 import com.tvd12.ezyfox.factory.EzyEntityFactory;
 import lombok.var;
 
-import java.util.*;
+import java.util.HashSet;
+import java.util.Set;
 
 @EzyObjectBinding
 public class CustomHashtable {
@@ -112,5 +113,10 @@ public class CustomHashtable {
 
     public Object toData() {
         return ezyObject.toMap();
+    }
+
+    @Override
+    public String toString() {
+        return ezyObject.toString();
     }
 }

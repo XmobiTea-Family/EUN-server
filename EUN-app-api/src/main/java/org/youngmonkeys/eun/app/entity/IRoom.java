@@ -2,11 +2,9 @@ package org.youngmonkeys.eun.app.entity;
 
 import com.tvd12.ezyfox.entity.EzyArray;
 import com.tvd12.ezyfoxserver.entity.EzyUser;
-import lombok.NonNull;
 import org.youngmonkeys.eun.common.entity.*;
 
 import java.util.Iterator;
-import java.util.List;
 
 public interface IRoom {
     int getRoomId();

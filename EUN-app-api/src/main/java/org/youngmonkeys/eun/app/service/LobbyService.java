@@ -1,18 +1,16 @@
 package org.youngmonkeys.eun.app.service;
 
 import com.tvd12.ezyfox.bean.annotation.EzySingleton;
-import com.tvd12.ezyfoxserver.entity.EzyUser;
-import lombok.NonNull;
+import com.tvd12.ezyfox.util.EzyLoggable;
 import lombok.var;
 import org.youngmonkeys.eun.app.entity.ILobby;
-import org.youngmonkeys.eun.app.entity.IRoom;
 import org.youngmonkeys.eun.app.entity.Lobby;
 
 import java.util.Hashtable;
 import java.util.Iterator;
 
 @EzySingleton
-public class LobbyService implements ILobbyService {
+public class LobbyService extends EzyLoggable implements ILobbyService {
     private Hashtable<Integer, ILobby> lobbyDic;
 
     @Override

@@ -30,15 +30,18 @@ public class ApplicationStartup {
 		
 		EzyAppSettingBuilder appSettingBuilder = new EzyAppSettingBuilder()
 				.name(APP_NAME)
+				.maxUsers(100)
 				.entryLoader(DecoratedAppEntryLoader.class);
 
 		EzyUserManagementSettingBuilder userManagementSettingBuilder = new EzyUserManagementSettingBuilder()
 				.maxSessionPerUser(1)
+				.userMaxIdleTimeInSecond(1)
 				.userNamePattern("^[a-zA-Z0-9_.#]{15,40}$")
 				.allowChangeSession(true);
 
 		EzyZoneSettingBuilder zoneSettingBuilder = new EzyZoneSettingBuilder()
 				.name(ZONE_NAME)
+				.maxUsers(100)
 				.application(appSettingBuilder.build())
 				.userManagement(userManagementSettingBuilder.build())
 				.plugin(pluginSettingBuilder.build());
@@ -64,11 +67,18 @@ public class ApplicationStartup {
 				.port(23005)
 				.maxRequestSize(2048);
 
+		EzySimpleSessionManagementSetting sessionManagement = new EzySessionManagementSettingBuilder()
+				.sessionMaxIdleTimeInSecond(15)
+				.sessionMaxWaitingTimeInSecond(15)
+				.build();
+		sessionManagement.init();
+
 		EzySimpleSettings settings = new EzySettingsBuilder()
 				.zone(zoneSettingBuilder.build())
 				.udp(udpSettingBuilder.build())
 				.socket(socketBuilder.build())
 				.websocket(webSocketSetting)
+				.sessionManagement(sessionManagement)
 				.build();
 		
 		EzyEmbeddedServer server = EzyEmbeddedServer.builder()

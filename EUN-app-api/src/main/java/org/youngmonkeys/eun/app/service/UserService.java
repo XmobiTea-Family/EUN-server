@@ -2,6 +2,7 @@ package org.youngmonkeys.eun.app.service;
 
 import com.tvd12.ezyfox.bean.annotation.EzyAutoBind;
 import com.tvd12.ezyfox.bean.annotation.EzySingleton;
+import com.tvd12.ezyfox.util.EzyLoggable;
 import com.tvd12.ezyfoxserver.entity.EzyUser;
 import com.tvd12.ezyfoxserver.support.factory.EzyResponseFactory;
 import com.tvd12.ezyfoxserver.wrapper.EzyUserManager;
@@ -16,7 +17,7 @@ import java.util.Iterator;
 import java.util.LinkedList;
 
 @EzySingleton
-public class UserService implements IUserService {
+public class UserService extends EzyLoggable implements IUserService {
     @EzyAutoBind
     private EzyResponseFactory responseFactory;
 
