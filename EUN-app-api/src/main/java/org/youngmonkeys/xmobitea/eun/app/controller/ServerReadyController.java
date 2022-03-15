@@ -15,7 +15,7 @@ public class ServerReadyController
 
 	@Override
 	public void handle(EzyAppContext ctx, EzyServerReadyEvent event) {
-		logger.info("Xmobitea EUN app: fire custom app ready");
+		logger.info("XmobiTea EUN app: fire custom app ready");
 	}
 	
 }
