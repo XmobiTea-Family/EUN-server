@@ -18,7 +18,7 @@ public class ChangePlayerCustomPropertiesOperationRequest extends OperationReque
         if (!super.isValidRequest()) return false;
 
         if (ownerId < 0) return false;
-        if (customPlayerProperties == null || customPlayerProperties.size() == 0) return false;
+        if (customPlayerProperties == null || customPlayerProperties.count() == 0) return false;
 
         return true;
     }

@@ -7,7 +7,7 @@ import java.util.List;
 @Data
 public class RoomOption {
     EUNHashtable customRoomProperties;
-    List<Integer> customRoomPropertiesForLobby;
+    EUNArray customRoomPropertiesForLobby;
     String password;
     int maxPlayer;
     boolean isVisible;

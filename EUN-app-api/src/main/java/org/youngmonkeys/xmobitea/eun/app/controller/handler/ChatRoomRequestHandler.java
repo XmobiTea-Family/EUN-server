@@ -48,7 +48,7 @@ public class ChatRoomRequestHandler  extends RoomRequestHandler {
         var userIterator = currentRoom.getUserIdIterator(-1);
         var onChatRoomEvent = new OperationEvent(EventCode.OnChatRoom);
         var parameters = new EUNHashtable();
-        parameters.put(ParameterCode.Message, new Object[] {
+        parameters.add(ParameterCode.Message, new Object[] {
                 userId,
                 message,
                 System.currentTimeMillis()

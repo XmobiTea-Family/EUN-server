@@ -11,6 +11,7 @@ import org.youngmonkeys.xmobitea.eun.app.request.OperationRequest;
 import org.youngmonkeys.xmobitea.eun.app.response.OperationResponse;
 import org.youngmonkeys.xmobitea.eun.common.constant.OperationCode;
 import org.youngmonkeys.xmobitea.eun.common.constant.ReturnCode;
+import org.youngmonkeys.xmobitea.eun.common.entity.EUNArray;
 import org.youngmonkeys.xmobitea.eun.common.entity.EUNHashtable;
 import org.youngmonkeys.xmobitea.eun.common.entity.RoomOption;
 
@@ -48,7 +49,7 @@ public class CreateRoomRequestHandler extends RoomRequestHandler {
         var roomOption = new RoomOption();
 
         var customRoomProperties = request.getCustomRoomProperties() != null ? request.getCustomRoomProperties() : new EUNHashtable();
-        var customRoomPropertiesForLobby = request.getCustomRoomPropertiesForLobby() != null ? request.getCustomRoomPropertiesForLobby() : new Vector<Integer>();
+        var customRoomPropertiesForLobby = request.getCustomRoomPropertiesForLobby() != null ? request.getCustomRoomPropertiesForLobby() : new EUNArray();
 
         roomOption.setCustomRoomProperties(customRoomProperties);
         roomOption.setCustomRoomPropertiesForLobby(customRoomPropertiesForLobby);

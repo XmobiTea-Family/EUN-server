@@ -1,122 +1,146 @@
 package org.youngmonkeys.xmobitea.eun.common.entity;
 
 import com.tvd12.ezyfox.binding.annotation.EzyObjectBinding;
-import com.tvd12.ezyfox.entity.EzyObject;
 import com.tvd12.ezyfox.factory.EzyEntityFactory;
 import lombok.var;
 
-import java.util.HashSet;
-import java.util.Set;
+import java.util.*;
 
 @EzyObjectBinding
-public class EUNHashtable {
-    private EzyObject ezyObject;
+public class EUNHashtable extends EUNData {
+    public static class Builder
+    {
+        private Map<Integer, Object> originObject;
 
-    public EUNHashtable() {
-        ezyObject = EzyEntityFactory.newObject();
-    }
+        public Builder add(Integer key, Object value)
+        {
+            originObject.put(key, value);
 
-    public EUNHashtable(EzyObject ezyObject) {
-        this.ezyObject = EzyEntityFactory.newObject();
+            return this;
+        }
 
-        if (ezyObject != null) {
-            var keys = ezyObject.keySet();
-            for (var key : keys) {
-                if (key instanceof String) {
-                    var keyStr = (String) key;
-                    this.ezyObject.put(Integer.parseInt(keyStr), ezyObject.get(key));
-                } else if (key instanceof Integer)
+        public Builder addAll(Map map)
+        {
+            var keySet = map.keySet();
+            for (var key : keySet)
+            {
+                if (key instanceof String)
                 {
-                    var keyInt = (Integer) key;
-                    this.ezyObject.put(keyInt, ezyObject.get(key));
+                    var keyStr = (String)key;
+
+                    try {
+                        var keyInt = Integer.parseInt(keyStr);
+
+                        add(keyInt, map.get(key));
+                    }
+                    catch (Exception ex) {
+
+                    }
+                }
+                else if (key instanceof Integer)
+                {
+                    var keyInt = (Integer)key;
+
+                    add(keyInt, map.get(key));
                 }
             }
+
+            return this;
+        }
+
+        public EUNHashtable build()
+        {
+            var answer = new EUNHashtable();
+
+            var keys = originObject.keySet();
+            for (var key : keys)
+            {
+                answer.add(key, originObject.get(key));
+            }
+
+            return answer;
+        }
+
+        public Builder()
+        {
+            originObject = new HashMap<Integer, Object>();
         }
     }
 
-    public int size() {
-        return ezyObject.size();
+    private Map<Integer, Object> originObject;
+
+    public void add(Integer k, Object value)
+    {
+        if (!originObject.containsKey(k)) originObject.put(k, createUseDataFromOriginData(value));
+        else originObject.replace(k, createUseDataFromOriginData(value));
     }
 
-    public Object getOrDefault(Integer key, Object defaultValue) {
-        if (containsKey(key)) return get(key);
+    public Collection<Object> values()
+    {
+        return originObject.values();
+    }
+
+    public Set<Integer> keySet()
+    {
+        return originObject.keySet();
+    }
+
+    public boolean containsKey(Integer key)
+    {
+        return originObject.containsKey(key);
+    }
+
+    public EUNHashtable() {
+        originObject = new HashMap<>();
+    }
+
+    protected <T> T get(Integer k, T defaultValue) {
+        if (originObject.containsKey(k))
+        {
+            var value = originObject.get(k);
+
+            if (value == null) return defaultValue;
+
+            try {
+                return (T)value;
+            }
+            catch (Exception ex) {
+                return defaultValue;
+            }
+        }
+
         return defaultValue;
     }
 
-    public boolean isEmpty() {
-        return ezyObject.isEmpty();
-    }
-
-    public boolean containsKey(Integer key) {
-        return ezyObject.containsKey(key);
-    }
-
-    public boolean containsValue(Object value) {
-        return ezyObject.isNotNullValue(value);
-    }
-
-    public Object get(Integer key) {
-        return ezyObject.get(key);
-    }
-
-    public Object put(Integer key, Object value) {
-        return ezyObject.put(key, value);
-    }
-
-    public Object remove(Integer key) {
-        return ezyObject.remove(key);
-    }
-
-    public Object replace(Integer key, Object value) {
-        Object answer = null;
-        if (containsKey(key)) answer = remove(key);
-        put(key, value);
-
-        return answer;
-    }
-
-    public void putAll(EUNHashtable eunHashtable) {
-        ezyObject.putAll(eunHashtable.ezyObject.toMap());
-    }
-
+    @Override
     public void clear() {
-        ezyObject.clear();
-    }
-
-    public Set<Integer> keySet() {
-        var answer = new HashSet<Integer>();
-
-        var keySet0 = ezyObject.keySet();
-
-        for (var key : keySet0) {
-            answer.add((Integer) key);
-        }
-
-        return answer;
-    }
-
-    private <V> V Get(int key, Class<V> vClass)
-    {
-        return ezyObject.get(key, vClass);
-    }
-
-//
-//    public Collection<Object> values() {
-//        return null;
-//    }
-//
-//    public Set<Map.Entry<Object, Object>> entrySet() {
-//        return ezyObject.entrySet();
-//    }
-
-
-
-    public Object toData() {
-        return ezyObject.toMap();
+        originObject.clear();
     }
 
     @Override
-    public String toString() {
-        return ezyObject.toString();
+    public boolean remove(Integer k) {
+        return originObject.remove(k) != null;
+    }
+
+    @Override
+    public Integer count() {
+        return originObject.size();
+    }
+
+    public Map<Integer, Object> toMap() {
+        return originObject;
+    }
+
+    @Override
+    public Object toEzyData() {
+        var ezyObject = EzyEntityFactory.newObject();
+
+        var keySet = originObject.keySet();
+        for (var key : keySet)
+        {
+            ezyObject.put(key, createEUNDataFromUseData(originObject.get(key)));
+        }
+
+        return ezyObject;
     }
 }

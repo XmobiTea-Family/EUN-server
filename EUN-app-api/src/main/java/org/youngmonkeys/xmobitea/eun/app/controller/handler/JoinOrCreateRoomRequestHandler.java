@@ -63,8 +63,8 @@ public class JoinOrCreateRoomRequestHandler extends RoomRequestHandler {
             joinRoomOperationRequest.setOperationCode(operationRequest.getOperationCode());
 
             var parameters = new EUNHashtable();
-            parameters.put(ParameterCode.RoomId, expectedRoom.getRoomId());
-            parameters.put(ParameterCode.Password, expectedRoom.getPassword());
+            parameters.add(ParameterCode.RoomId, expectedRoom.getRoomId());
+            parameters.add(ParameterCode.Password, expectedRoom.getPassword());
 
             joinRoomOperationRequest.setParameters(parameters);
 
@@ -92,8 +92,8 @@ public class JoinOrCreateRoomRequestHandler extends RoomRequestHandler {
 
                 var keySet = expectedProperties.keySet();
                 for (var key : keySet) {
-                    var expectedValue = expectedProperties.getOrDefault(key, null);
-                    var roomValue = roomCustomRoomProperties.getOrDefault(key, null);
+                    var expectedValue = expectedProperties.getObject(key, null);
+                    var roomValue = roomCustomRoomProperties.getObject(key, null);
 
                     if (expectedValue == null && roomValue == null) conditionTrueCount++;
                     else {

@@ -14,7 +14,7 @@ public class ChangeRoomInfoOperationRequest extends OperationRequest {
     public boolean isValidRequest() {
         if (!super.isValidRequest()) return false;
 
-        if (eunHashtable == null || eunHashtable.size() == 0) return false;
+        if (eunHashtable == null || eunHashtable.count() == 0) return false;
 
         return true;
     }

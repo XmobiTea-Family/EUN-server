@@ -22,7 +22,7 @@ public class OperationResponse {
     public Object toData() {
         return new Object[] {
                 returnCode,
-                returnCode == 0 ? (parameters == null ? null : parameters.toData()) : debugMessage,
+                returnCode == 0 ? (parameters == null ? null : parameters.toEzyData()) : debugMessage,
                 responseId
         };
     }

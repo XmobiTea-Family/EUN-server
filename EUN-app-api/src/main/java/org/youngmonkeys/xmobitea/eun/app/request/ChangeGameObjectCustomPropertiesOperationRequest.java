@@ -18,7 +18,7 @@ public class ChangeGameObjectCustomPropertiesOperationRequest extends OperationR
         if (!super.isValidRequest()) return false;
 
         if (objectId < 0) return false;
-        if (customGameObjectProperties == null || customGameObjectProperties.size() == 0) return false;
+        if (customGameObjectProperties == null || customGameObjectProperties.count() == 0) return false;
 
         return true;
     }

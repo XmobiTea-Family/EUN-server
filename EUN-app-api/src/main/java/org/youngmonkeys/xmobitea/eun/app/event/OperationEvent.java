@@ -15,7 +15,7 @@ public class OperationEvent {
     public Object toData() {
         return new Object[] {
                 eventCode,
-                parameters == null ? null : parameters.toData()
+                parameters == null ? null : parameters.toEzyData()
         };
     }
 }

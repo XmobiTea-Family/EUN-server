@@ -31,7 +31,7 @@ public class SyncTsRequestHandler extends LobbyRequestHandler {
         response.setReturnCode(ReturnCode.Ok);
 
         var parameters = new EUNHashtable();
-        parameters.put(ParameterCode.Ts, System.currentTimeMillis());
+        parameters.add(ParameterCode.Ts, System.currentTimeMillis());
         response.setParameters(parameters);
 
         return response;

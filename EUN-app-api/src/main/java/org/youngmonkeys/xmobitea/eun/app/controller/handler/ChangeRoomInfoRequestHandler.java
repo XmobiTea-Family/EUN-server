@@ -38,37 +38,37 @@ public class ChangeRoomInfoRequestHandler extends RoomRequestHandler {
         var eunHashtable = request.getEunHashtable();
 
         if (eunHashtable.containsKey(ParameterCode.MaxPlayer)) {
-            var data = (int)eunHashtable.get(ParameterCode.MaxPlayer);
+            var data = eunHashtable.getInt(ParameterCode.MaxPlayer);
             currentRoom.setMaxPlayer(peer, data);
         }
 
         if (eunHashtable.containsKey(ParameterCode.CustomRoomProperties)) {
-            var data = (EUNHashtable)eunHashtable.get(ParameterCode.CustomRoomProperties);
+            var data = eunHashtable.getEUNHashtable(ParameterCode.CustomRoomProperties);
             currentRoom.setCustomRoomProperties(peer, data);
         }
 
         if (eunHashtable.containsKey(ParameterCode.CustomRoomPropertiesForLobby)) {
-            var data = (EUNHashtable)eunHashtable.get(ParameterCode.CustomRoomPropertiesForLobby);
+            var data = eunHashtable.getEUNHashtable(ParameterCode.CustomRoomPropertiesForLobby);
             currentRoom.setCustomRoomPropertiesForLobby(peer, data);
         }
 
         if (eunHashtable.containsKey(ParameterCode.IsOpen)) {
-            var data = (boolean)eunHashtable.get(ParameterCode.IsOpen);
+            var data = eunHashtable.getBool(ParameterCode.IsOpen);
             currentRoom.setOpen(peer, data);
         }
 
         if (eunHashtable.containsKey(ParameterCode.IsVisible)) {
-            var data = (boolean)eunHashtable.get(ParameterCode.IsVisible);
+            var data = eunHashtable.getBool(ParameterCode.IsVisible);
             currentRoom.setVisible(peer, data);
         }
 
         if (eunHashtable.containsKey(ParameterCode.Password)) {
-            var data = (String)eunHashtable.get(ParameterCode.Password);
+            var data = eunHashtable.getString(ParameterCode.Password);
             currentRoom.setPassword(peer, data);
         }
 
         if (eunHashtable.containsKey(ParameterCode.Ttl)) {
-            var data = (int)eunHashtable.get(ParameterCode.Ttl);
+            var data = eunHashtable.getInt(ParameterCode.Ttl);
             currentRoom.setTtl(peer, data);
         }
 

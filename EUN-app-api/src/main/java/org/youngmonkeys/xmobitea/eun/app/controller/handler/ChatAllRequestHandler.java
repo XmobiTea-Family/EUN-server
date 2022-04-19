@@ -44,7 +44,7 @@ public class ChatAllRequestHandler extends RequestHandler {
 
         var onChatAllEvent = new OperationEvent(EventCode.OnChatAll);
         var parameters = new EUNHashtable();
-        parameters.put(ParameterCode.Message, new Object[] {
+        parameters.add(ParameterCode.Message, new Object[] {
                 userId,
                 message,
                 System.currentTimeMillis()

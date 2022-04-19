@@ -18,7 +18,7 @@ public class RoomGameObject {
                 prefabPath,
                 synchronizationData,
                 initializeData,
-                customProperties.toData()
+                customProperties.toEzyData()
         };
     }
 }

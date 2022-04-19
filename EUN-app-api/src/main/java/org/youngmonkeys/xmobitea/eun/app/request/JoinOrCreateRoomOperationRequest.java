@@ -3,6 +3,7 @@ package org.youngmonkeys.xmobitea.eun.app.request;
 import lombok.Data;
 import org.youngmonkeys.xmobitea.eun.app.entity.EzyDataMember;
 import org.youngmonkeys.xmobitea.eun.common.constant.ParameterCode;
+import org.youngmonkeys.xmobitea.eun.common.entity.EUNArray;
 import org.youngmonkeys.xmobitea.eun.common.entity.EUNHashtable;
 
 import java.util.List;
@@ -28,7 +29,7 @@ public class JoinOrCreateRoomOperationRequest extends OperationRequest {
     boolean isOpen = true;
 
     @EzyDataMember(code = ParameterCode.CustomRoomPropertiesForLobby, isOptional = true)
-    List<Integer> customRoomPropertiesForLobby;
+    EUNArray customRoomPropertiesForLobby;
 
     @EzyDataMember(code = ParameterCode.Password, isOptional = true)
     String password;

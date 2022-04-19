@@ -33,7 +33,7 @@ public class Room extends EzyLoggable implements IRoom {
     String leaderClientUserId;
     int maxPlayer;
     EUNHashtable customRoomProperties;
-    List<Integer> customRoomPropertiesForLobby;
+    EUNArray customRoomPropertiesForLobby;
     boolean isVisible;
     boolean isOpen;
     long tsCreate;
@@ -73,7 +73,8 @@ public class Room extends EzyLoggable implements IRoom {
 
     @Override
     public Iterator<Integer> getCustomRoomPropertiesForLobby() {
-        return customRoomPropertiesForLobby.iterator();
+        List<Integer> answer = customRoomPropertiesForLobby.toList();
+        return answer.iterator();
     }
 
     @Override
@@ -93,7 +94,7 @@ public class Room extends EzyLoggable implements IRoom {
             threadPool.execute(() -> {
                 var onPlayerJoinRoomEvent = new OperationEvent(EventCode.OnPlayerJoinRoom);
                 var playerJoinRoomParameters = new EUNHashtable();
-                playerJoinRoomParameters.put(ParameterCode.Data, roomPlayer.toData());
+                playerJoinRoomParameters.add(ParameterCode.Data, roomPlayer.toData());
                 onPlayerJoinRoomEvent.setParameters(playerJoinRoomParameters);
 
                 userService.sendEventToSomePeerByUserIds(getUserIdIterator(roomPlayer.getPlayerId()), onPlayerJoinRoomEvent);
@@ -107,7 +108,7 @@ public class Room extends EzyLoggable implements IRoom {
         threadPool.execute(() -> {
             var onJoinRoomEvent = new OperationEvent(EventCode.OnJoinRoom);
             var joinRoomParameters = new EUNHashtable();
-            joinRoomParameters.put(ParameterCode.Data, toFullData());
+            joinRoomParameters.add(ParameterCode.Data, toFullData());
             onJoinRoomEvent.setParameters(joinRoomParameters);
 
             userService.sendEvent(peer, onJoinRoomEvent);
@@ -154,7 +155,7 @@ public class Room extends EzyLoggable implements IRoom {
         threadPool.execute(() -> {
             var onPlayerLeftRoomEvent = new OperationEvent(EventCode.OnPlayerLeftRoom);
             var playerLeftRoomParameters = new EUNHashtable();
-            playerLeftRoomParameters.put(ParameterCode.Data, roomPlayer.toData());
+            playerLeftRoomParameters.add(ParameterCode.Data, roomPlayer.toData());
             onPlayerLeftRoomEvent.setParameters(playerLeftRoomParameters);
 
             userService.sendEventToSomePeerByUserIds(getUserIdIterator(roomPlayer.getPlayerId()), onPlayerLeftRoomEvent);
@@ -213,7 +214,7 @@ public class Room extends EzyLoggable implements IRoom {
         threadPool.execute(() -> {
             var onJoinRoomEvent = new OperationEvent(EventCode.OnJoinRoom);
             var joinRoomParameters = new EUNHashtable();
-            joinRoomParameters.put(ParameterCode.Data, toFullData());
+            joinRoomParameters.add(ParameterCode.Data, toFullData());
             onJoinRoomEvent.setParameters(joinRoomParameters);
 
             userService.sendEvent(peer, onJoinRoomEvent);
@@ -247,7 +248,7 @@ public class Room extends EzyLoggable implements IRoom {
         threadPool.execute(() -> {
             var onPlayerJoinRoomEvent = new OperationEvent(EventCode.OnLeaderClientChange);
             var playerJoinRoomParameters = new EUNHashtable();
-            playerJoinRoomParameters.put(ParameterCode.Data, newLeaderClient.toData());
+            playerJoinRoomParameters.add(ParameterCode.Data, newLeaderClient.toData());
             onPlayerJoinRoomEvent.setParameters(playerJoinRoomParameters);
 
             userService.sendEventToSomePeerByUserIds(getUserIdIterator(-1), onPlayerJoinRoomEvent);
@@ -272,7 +273,7 @@ public class Room extends EzyLoggable implements IRoom {
 
         var keySet = customRoomProperties.keySet();
         for (var key : keySet) {
-            var value = customRoomProperties.get(key);
+            var value = customRoomProperties.getObject(key);
 
             if (value == null) {
                 if (this.customRoomProperties.containsKey(key)) {
@@ -280,15 +281,14 @@ public class Room extends EzyLoggable implements IRoom {
                 }
             }
             else {
-                if (!this.customRoomProperties.containsKey(key)) this.customRoomProperties.put(key, value);
-                else this.customRoomProperties.replace(key, value);
+                this.customRoomProperties.add(key, value);
             }
         }
 
         threadPool.execute(() -> {
             var onRoomInfoChangeEvent = new OperationEvent(EventCode.OnRoomInfoChange);
             var roomInfoChangeParameters = new EUNHashtable();
-            roomInfoChangeParameters.put(ParameterCode.CustomRoomProperties, customRoomProperties);
+            roomInfoChangeParameters.add(ParameterCode.CustomRoomProperties, customRoomProperties);
             onRoomInfoChangeEvent.setParameters(roomInfoChangeParameters);
 
             userService.sendEventToSomePeerByUserIds(getUserIdIterator(-1), onRoomInfoChangeEvent);
@@ -303,7 +303,7 @@ public class Room extends EzyLoggable implements IRoom {
 
         var keySet = customRoomPropertiesForLobby.keySet();
         for (var key : keySet) {
-            var value = customRoomPropertiesForLobby.get(key);
+            var value = customRoomPropertiesForLobby.getObject(key);
 
             if (value == null) {
                 if (this.customRoomPropertiesForLobby.contains(key)) {
@@ -319,7 +319,7 @@ public class Room extends EzyLoggable implements IRoom {
         threadPool.execute(() -> {
             var onRoomInfoChangeEvent = new OperationEvent(EventCode.OnRoomInfoChange);
             var roomInfoChangeParameters = new EUNHashtable();
-            roomInfoChangeParameters.put(ParameterCode.CustomRoomPropertiesForLobby, this.customRoomPropertiesForLobby);
+            roomInfoChangeParameters.add(ParameterCode.CustomRoomPropertiesForLobby, this.customRoomPropertiesForLobby);
             onRoomInfoChangeEvent.setParameters(roomInfoChangeParameters);
 
             userService.sendEventToSomePeerByUserIds(getUserIdIterator(-1), onRoomInfoChangeEvent);
@@ -339,7 +339,7 @@ public class Room extends EzyLoggable implements IRoom {
         threadPool.execute(() -> {
             var onRoomInfoChangeEvent = new OperationEvent(EventCode.OnRoomInfoChange);
             var roomInfoChangeParameters = new EUNHashtable();
-            roomInfoChangeParameters.put(ParameterCode.MaxPlayer, maxPlayer);
+            roomInfoChangeParameters.add(ParameterCode.MaxPlayer, maxPlayer);
             onRoomInfoChangeEvent.setParameters(roomInfoChangeParameters);
 
             userService.sendEventToSomePeerByUserIds(getUserIdIterator(-1), onRoomInfoChangeEvent);
@@ -358,7 +358,7 @@ public class Room extends EzyLoggable implements IRoom {
         threadPool.execute(() -> {
             var onRoomInfoChangeEvent = new OperationEvent(EventCode.OnRoomInfoChange);
             var roomInfoChangeParameters = new EUNHashtable();
-            roomInfoChangeParameters.put(ParameterCode.IsOpen, isOpen);
+            roomInfoChangeParameters.add(ParameterCode.IsOpen, isOpen);
             onRoomInfoChangeEvent.setParameters(roomInfoChangeParameters);
 
             userService.sendEventToSomePeerByUserIds(getUserIdIterator(-1), onRoomInfoChangeEvent);
@@ -377,7 +377,7 @@ public class Room extends EzyLoggable implements IRoom {
         threadPool.execute(() -> {
             var onRoomInfoChangeEvent = new OperationEvent(EventCode.OnRoomInfoChange);
             var roomInfoChangeParameters = new EUNHashtable();
-            roomInfoChangeParameters.put(ParameterCode.IsVisible, isVisible);
+            roomInfoChangeParameters.add(ParameterCode.IsVisible, isVisible);
             onRoomInfoChangeEvent.setParameters(roomInfoChangeParameters);
 
             userService.sendEventToSomePeerByUserIds(getUserIdIterator(-1), onRoomInfoChangeEvent);
@@ -396,7 +396,7 @@ public class Room extends EzyLoggable implements IRoom {
         threadPool.execute(() -> {
             var onRoomInfoChangeEvent = new OperationEvent(EventCode.OnRoomInfoChange);
             var roomInfoChangeParameters = new EUNHashtable();
-            roomInfoChangeParameters.put(ParameterCode.Password, password);
+            roomInfoChangeParameters.add(ParameterCode.Password, password);
             onRoomInfoChangeEvent.setParameters(roomInfoChangeParameters);
 
             userService.sendEventToSomePeerByUserIds(getUserIdIterator(-1), onRoomInfoChangeEvent);
@@ -423,7 +423,7 @@ public class Room extends EzyLoggable implements IRoom {
 
         var keySet = customPlayerProperties.keySet();
         for (var key : keySet) {
-            var value = customPlayerProperties.get(key);
+            var value = customPlayerProperties.getObject(key);
 
             if (value == null) {
                 if (roomPlayer.getCustomProperties().containsKey(key)) {
@@ -431,16 +431,14 @@ public class Room extends EzyLoggable implements IRoom {
                 }
             }
             else {
-                if (!roomPlayer.getCustomProperties().containsKey(key))
-                    roomPlayer.getCustomProperties().put(key, value);
-                else  roomPlayer.getCustomProperties().replace(key, value);
+                roomPlayer.getCustomProperties().add(key, value);
             }
         }
 
         threadPool.execute(() -> {
             var onCustomPlayerPropertiesChangeEvent = new OperationEvent(EventCode.OnCustomPlayerPropertiesChange);
             var customPlayerPropertiesChangeParameters = new EUNHashtable();
-            customPlayerPropertiesChangeParameters.put(ParameterCode.Data, new Object[] {
+            customPlayerPropertiesChangeParameters.add(ParameterCode.Data, new Object[] {
                     roomPlayer.getPlayerId(),
                     customPlayerProperties
             });
@@ -485,7 +483,7 @@ public class Room extends EzyLoggable implements IRoom {
         threadPool.execute(() -> {
             var event = new OperationEvent(EventCode.OnCreateGameObject);
             var parameters = new EUNHashtable();
-            parameters.put(ParameterCode.Data, roomGameObject.toData());
+            parameters.add(ParameterCode.Data, roomGameObject.toData());
             event.setParameters(parameters);
 
             userService.sendEventToSomePeerByUserIds(getUserIdIterator(-1), event);
@@ -502,7 +500,7 @@ public class Room extends EzyLoggable implements IRoom {
         var customProperties = roomGameObject.getCustomProperties();
         var keySet = customGameObjectProperties.keySet();
         for (var key : keySet) {
-            var value = customGameObjectProperties.get(key);
+            var value = customGameObjectProperties.getObject(key);
 
             if (value == null) {
                 if (customProperties.containsKey(key)) {
@@ -510,17 +508,15 @@ public class Room extends EzyLoggable implements IRoom {
                 }
             }
             else {
-                if (!customProperties.containsKey(key))
-                    customProperties.put(key, value);
-                else customProperties.replace(key, value);
+                customProperties.add(key, value);
             }
         }
 
         threadPool.execute(() -> {
             var onCustomGameObjectPropertiesChangeEvent = new OperationEvent(EventCode.OnCustomGameObjectPropertiesChange);
             var customGameObjectPropertiesChangeParameters = new EUNHashtable();
-            customGameObjectPropertiesChangeParameters.put(ParameterCode.Data, new Object[] {
-                    objectId, customGameObjectProperties.toData()
+            customGameObjectPropertiesChangeParameters.add(ParameterCode.Data, new Object[] {
+                    objectId, customGameObjectProperties.toEzyData()
             });
             onCustomGameObjectPropertiesChangeEvent.setParameters(customGameObjectPropertiesChangeParameters);
 
@@ -540,7 +536,7 @@ public class Room extends EzyLoggable implements IRoom {
         threadPool.execute(() -> {
             var event = new OperationEvent(EventCode.OnDestroyGameObject);
             var parameters = new EUNHashtable();
-            parameters.put(ParameterCode.ObjectId, new Object[] {
+            parameters.add(ParameterCode.ObjectId, new Object[] {
                     objectId
             });
             event.setParameters(parameters);
@@ -567,7 +563,7 @@ public class Room extends EzyLoggable implements IRoom {
         threadPool.execute(() -> {
             var event = new OperationEvent(EventCode.OnSynchronizationDataGameObject);
             var parameters = new EUNHashtable();
-            parameters.put(ParameterCode.Data, new Object[] {
+            parameters.add(ParameterCode.Data, new Object[] {
                     objectId,
                     synchronizationData
             });
@@ -587,7 +583,7 @@ public class Room extends EzyLoggable implements IRoom {
         threadPool.execute(() -> {
             var event = new OperationEvent(EventCode.OnRpcGameObject);
             var eventParameters = new EUNHashtable();
-            eventParameters.put(ParameterCode.Data, new Object[] {
+            eventParameters.add(ParameterCode.Data, new Object[] {
                     objectId,
                     eunRPCCommand,
                     rpcData
@@ -620,7 +616,7 @@ public class Room extends EzyLoggable implements IRoom {
         threadPool.execute(() -> {
             var event = new OperationEvent(EventCode.OnRpcGameObject);
             var eventParameters = new EUNHashtable();
-            eventParameters.put(ParameterCode.Data, new Object[] {
+            eventParameters.add(ParameterCode.Data, new Object[] {
                     objectId,
                     eunRPCCommand,
                     rpcData
@@ -651,7 +647,7 @@ public class Room extends EzyLoggable implements IRoom {
         threadPool.execute(() -> {
             var event = new OperationEvent(EventCode.OnTransferOwnerGameObject);
             var eventParameters = new EUNHashtable();
-            eventParameters.put(ParameterCode.Data, new Object[] {
+            eventParameters.add(ParameterCode.Data, new Object[] {
                     objectId,
                     newOwnerId
             });
@@ -673,7 +669,7 @@ public class Room extends EzyLoggable implements IRoom {
         threadPool.execute(() -> {
             var event = new OperationEvent(EventCode.OnVoiceChat);
             var parameters = new EUNHashtable();
-            parameters.put(ParameterCode.Data, new Object[] {
+            parameters.add(ParameterCode.Data, new Object[] {
                     objectId,
                     voiceChatData
             });
@@ -708,9 +704,7 @@ public class Room extends EzyLoggable implements IRoom {
         var returnCustomRoomPropertiesForLobby = new EUNHashtable();
         customRoomPropertiesForLobby.forEachRemaining(childCustomRoomPropertiesForLobby -> {
             if (customRoomProperties.containsKey(childCustomRoomPropertiesForLobby)) {
-                if (!returnCustomRoomPropertiesForLobby.containsKey(childCustomRoomPropertiesForLobby))
-                    returnCustomRoomPropertiesForLobby.put(childCustomRoomPropertiesForLobby, customRoomProperties.get(childCustomRoomPropertiesForLobby));
-                else returnCustomRoomPropertiesForLobby.replace(childCustomRoomPropertiesForLobby, customRoomProperties.get(childCustomRoomPropertiesForLobby));
+                returnCustomRoomPropertiesForLobby.add(childCustomRoomPropertiesForLobby, customRoomProperties.getObject(childCustomRoomPropertiesForLobby));
             }
         });
 
@@ -804,7 +798,7 @@ public class Room extends EzyLoggable implements IRoom {
         threadPool.execute(() -> {
             var onLeaderClientChangeEvent = new OperationEvent(EventCode.OnLeaderClientChange);
             var leaderClientChangeParameters = new EUNHashtable();
-            leaderClientChangeParameters.put(ParameterCode.Data, newLeaderClient.toData());
+            leaderClientChangeParameters.add(ParameterCode.Data, newLeaderClient.toData());
             onLeaderClientChangeEvent.setParameters(leaderClientChangeParameters);
 
             userService.sendEventToSomePeerByUserIds(getUserIdIterator(-1), onLeaderClientChangeEvent);
@@ -840,13 +834,13 @@ public class Room extends EzyLoggable implements IRoom {
 
         this.threadPool = Executors.newSingleThreadExecutor();
         {
-            this.customRoomProperties = new EUNHashtable();
-            this.customRoomProperties.putAll(roomOption.getCustomRoomProperties());
+            this.customRoomProperties = new EUNHashtable.Builder().addAll(roomOption.getCustomRoomProperties().toMap()).build();
         }
 
         {
-            this.customRoomPropertiesForLobby = new LinkedList<>();
-            this.customRoomPropertiesForLobby.addAll(roomOption.getCustomRoomPropertiesForLobby());
+            this.customRoomPropertiesForLobby = new EUNArray.Builder()
+                    .addAll(roomOption.getCustomRoomPropertiesForLobby().toList())
+                    .build();
         }
 
         leaderClientUserId = "";

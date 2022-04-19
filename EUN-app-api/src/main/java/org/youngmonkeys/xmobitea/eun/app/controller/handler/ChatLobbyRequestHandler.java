@@ -42,7 +42,7 @@ public class ChatLobbyRequestHandler extends LobbyRequestHandler {
         var userIterator = currentLobby.getChatPeerUserIdIterator();
         var onChatLobbyEvent = new OperationEvent(EventCode.OnChatLobby);
         var parameters = new EUNHashtable();
-        parameters.put(ParameterCode.Message, new Object[] {
+        parameters.add(ParameterCode.Message, new Object[] {
                 userId,
                 message,
                 System.currentTimeMillis()

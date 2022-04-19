@@ -41,7 +41,7 @@ public class CreateGameObjectRoomRequestHandler extends RoomRequestHandler {
             response.setReturnCode(ReturnCode.Ok);
 
             var parameters = new EUNHashtable();
-            parameters.put(ParameterCode.Data, roomGameObject.toData());
+            parameters.add(ParameterCode.Data, roomGameObject.toData());
 
             response.setParameters(parameters);
         }

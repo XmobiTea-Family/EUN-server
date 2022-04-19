@@ -57,7 +57,7 @@ public class GetCurrentLobbyStatsRequestHandler extends LobbyRequestHandler {
         response.setReturnCode(ReturnCode.Ok);
 
         var parameters = new EUNHashtable();
-        parameters.put(ParameterCode.Data, new Object[] {
+        parameters.add(ParameterCode.Data, new Object[] {
                 returnLobbyStats,
                 returnRoomLst
         });
