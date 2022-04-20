@@ -12,7 +12,7 @@ public class EUNHashtable extends EUNData {
     {
         private Map<Integer, Object> originObject;
 
-        public Builder add(Integer key, Object value)
+        public Builder add(int key, Object value)
         {
             originObject.put(key, value);
 
@@ -39,7 +39,7 @@ public class EUNHashtable extends EUNData {
                 }
                 else if (key instanceof Integer)
                 {
-                    var keyInt = (Integer)key;
+                    var keyInt = (int)key;
 
                     add(keyInt, map.get(key));
                 }
@@ -69,7 +69,15 @@ public class EUNHashtable extends EUNData {
 
     private Map<Integer, Object> originObject;
 
-    public void add(Integer k, Object value)
+    public EUNHashtable() {
+        originObject = new HashMap<>();
+    }
+
+    public Map<Integer, Object> toMap() {
+        return originObject;
+    }
+
+    public void add(int k, Object value)
     {
         if (!originObject.containsKey(k)) originObject.put(k, createUseDataFromOriginData(value));
         else originObject.replace(k, createUseDataFromOriginData(value));
@@ -85,16 +93,13 @@ public class EUNHashtable extends EUNData {
         return originObject.keySet();
     }
 
-    public boolean containsKey(Integer key)
+    public boolean containsKey(int key)
     {
         return originObject.containsKey(key);
     }
 
-    public EUNHashtable() {
-        originObject = new HashMap<>();
-    }
-
-    protected <T> T get(Integer k, T defaultValue) {
+    @Override
+    protected <T> T get(int k, T defaultValue) {
         if (originObject.containsKey(k))
         {
             var value = originObject.get(k);
@@ -118,17 +123,13 @@ public class EUNHashtable extends EUNData {
     }
 
     @Override
-    public boolean remove(Integer k) {
+    public boolean remove(int k) {
         return originObject.remove(k) != null;
     }
 
     @Override
-    public Integer count() {
+    public int count() {
         return originObject.size();
-    }
-
-    public Map<Integer, Object> toMap() {
-        return originObject;
     }
 
     @Override

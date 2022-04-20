@@ -731,6 +731,8 @@ public class Room extends EzyLoggable implements IRoom {
             returnGameObjectDic.add(gameObjectValues.next().toData());
         }
 
+        var a = new Object[] {};
+
         return new Object[]{
                 roomId,
                 isOpen,

@@ -106,6 +106,6 @@ public class NetworkStatisticsService extends EzyLoggable implements INetworkSta
     }
 
     private void debug(Unit unit) {
-        logger.info(String.format("[RECV: %,.2f] [SEND: %,.2f] [RECV COUNT: %d] [SEND COUNT: %d] (%s)", getTotalReadBytes() * 1.0f / unit.getIntValue(), getTotalWriteBytes() * 1.0f / unit.getIntValue(), getTotalReadPackets(), getTotalWritePackets(), unit.getStrValue()));
+        //logger.info(String.format("[RECV: %,.2f] [SEND: %,.2f] [RECV COUNT: %d] [SEND COUNT: %d] (%s)", getTotalReadBytes() * 1.0f / unit.getIntValue(), getTotalWriteBytes() * 1.0f / unit.getIntValue(), getTotalReadPackets(), getTotalWritePackets(), unit.getStrValue()));
     }
 }

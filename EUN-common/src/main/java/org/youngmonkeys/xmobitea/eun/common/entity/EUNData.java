@@ -1,12 +1,14 @@
 package org.youngmonkeys.xmobitea.eun.common.entity;
 
+import com.tvd12.ezyfox.binding.annotation.EzyObjectBinding;
 import com.tvd12.ezyfox.entity.EzyArray;
 import com.tvd12.ezyfox.entity.EzyObject;
 import lombok.var;
 
-import java.util.List;
+import java.util.Collection;
 import java.util.Map;
 
+@EzyObjectBinding
 public class EUNData implements IEUNData {
 
     protected static Object createUseDataFromOriginData(Object value) {
@@ -40,8 +42,8 @@ public class EUNData implements IEUNData {
             return value;
         }
 
-        if (value instanceof List) {
-            var list = (List) value;
+        if (value instanceof Collection) {
+            var list = (Collection) value;
 
             var answer = new EUNArray.Builder()
                     .addAll(list)
@@ -55,6 +57,16 @@ public class EUNData implements IEUNData {
 
             var answer = new EUNHashtable.Builder()
                     .addAll(map)
+                    .build();
+
+            return answer;
+        }
+
+        if (value instanceof Object[]) {
+            var arrays = (Object[]) value;
+
+            var answer = new EUNArray.Builder()
+                    .addAll(arrays)
                     .build();
 
             return answer;
@@ -74,7 +86,7 @@ public class EUNData implements IEUNData {
         return value;
     }
 
-    protected <T> T get(Integer k, T defaultValue) {
+    protected <T> T get(int k, T defaultValue) {
         return defaultValue;
     }
 
@@ -84,122 +96,122 @@ public class EUNData implements IEUNData {
     }
 
     @Override
-    public boolean remove(Integer k) {
+    public boolean remove(int k) {
         return false;
     }
 
     @Override
-    public Integer count() {
+    public int count() {
         return 0;
     }
 
     @Override
-    public byte getByte(Integer k) {
+    public byte getByte(int k) {
         return getByte(k, (byte) 0);
     }
 
     @Override
-    public byte getByte(Integer k, byte defaultValue) {
+    public byte getByte(int k, byte defaultValue) {
         return ((Number) get(k, defaultValue)).byteValue();
     }
 
     @Override
-    public short getShort(Integer k) {
+    public short getShort(int k) {
         return getShort(k, (short) 0);
     }
 
     @Override
-    public short getShort(Integer k, short defaultValue) {
+    public short getShort(int k, short defaultValue) {
         return ((Number) get(k, defaultValue)).shortValue();
     }
 
     @Override
-    public Integer getInt(Integer k) {
+    public int getInt(int k) {
         return getInt(k, 0);
     }
 
     @Override
-    public Integer getInt(Integer k, Integer defaultValue) {
+    public int getInt(int k, int defaultValue) {
         return ((Number) get(k, defaultValue)).intValue();
     }
 
     @Override
-    public float getFloat(Integer k) {
+    public float getFloat(int k) {
         return getFloat(k, 0);
     }
 
     @Override
-    public float getFloat(Integer k, float defaultValue) {
+    public float getFloat(int k, float defaultValue) {
         return ((Number) get(k, defaultValue)).floatValue();
     }
 
     @Override
-    public long getLong(Integer k) {
+    public long getLong(int k) {
         return getLong(k, 0);
     }
 
     @Override
-    public long getLong(Integer k, long defaultValue) {
+    public long getLong(int k, long defaultValue) {
         return ((Number) get(k, defaultValue)).longValue();
     }
 
     @Override
-    public double getDouble(Integer k) {
+    public double getDouble(int k) {
         return getDouble(k, 0);
     }
 
     @Override
-    public double getDouble(Integer k, double defaultValue) {
+    public double getDouble(int k, double defaultValue) {
         return ((Number) get(k, defaultValue)).doubleValue();
     }
 
     @Override
-    public boolean getBool(Integer k) {
+    public boolean getBool(int k) {
         return getBool(k, false);
     }
 
     @Override
-    public boolean getBool(Integer k, boolean defaultValue) {
+    public boolean getBool(int k, boolean defaultValue) {
         return get(k, defaultValue);
     }
 
     @Override
-    public String getString(Integer k) {
+    public String getString(int k) {
         return getString(k, null);
     }
 
     @Override
-    public String getString(Integer k, String defaultValue) {
+    public String getString(int k, String defaultValue) {
         return get(k, defaultValue);
     }
 
     @Override
-    public Object getObject(Integer k) {
+    public Object getObject(int k) {
         return getObject(k, null);
     }
 
     @Override
-    public Object getObject(Integer k, Object defaultValue) {
+    public Object getObject(int k, Object defaultValue) {
         return get(k, defaultValue);
     }
 
     @Override
-    public EUNArray getEUNArray(Integer k) {
+    public EUNArray getEUNArray(int k) {
         return getEUNArray(k, null);
     }
 
     @Override
-    public EUNArray getEUNArray(Integer k, EUNArray defaultValue) {
+    public EUNArray getEUNArray(int k, EUNArray defaultValue) {
         return get(k, defaultValue);
     }
 
     @Override
-    public EUNHashtable getEUNHashtable(Integer k) {
+    public EUNHashtable getEUNHashtable(int k) {
         return getEUNHashtable(k, null);
     }
 
     @Override
-    public EUNHashtable getEUNHashtable(Integer k, EUNHashtable defaultValue) {
+    public EUNHashtable getEUNHashtable(int k, EUNHashtable defaultValue) {
         return get(k, defaultValue);
     }
 

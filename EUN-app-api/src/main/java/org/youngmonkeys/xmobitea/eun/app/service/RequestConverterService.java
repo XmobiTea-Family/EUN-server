@@ -68,7 +68,7 @@ public class RequestConverterService extends EzyLoggable implements IRequestConv
                                 }
                                 else field.set(object, value);
                             }
-                            else field.set(object, null);
+                            else field.set(object, value);
                         }
                         else {
                             isValidRequest = false;

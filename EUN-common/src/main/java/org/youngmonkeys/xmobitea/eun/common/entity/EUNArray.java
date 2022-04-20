@@ -5,12 +5,13 @@ import com.tvd12.ezyfox.factory.EzyEntityFactory;
 import lombok.var;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 
 @EzyObjectBinding
 public class EUNArray extends EUNData {
     public static class Builder {
-        private List<Object> originArray;
+        private Collection<Object> originArray;
 
         public Builder add(Object value) {
             originArray.add(value);
@@ -18,8 +19,16 @@ public class EUNArray extends EUNData {
             return this;
         }
 
-        public Builder addAll(List list) {
+        public Builder addAll(Collection list) {
             for (var o : list) {
+                add(o);
+            }
+
+            return this;
+        }
+
+        public Builder addAll(Object[] arrays) {
+            for (var o : arrays) {
                 add(o);
             }
 
@@ -47,6 +56,17 @@ public class EUNArray extends EUNData {
         this.originArray = new ArrayList<>();
     }
 
+    public <T> List<T> toList() {
+        var answer = new ArrayList<T>();
+
+        var values = values();
+        for (var i = 0; i < values.size(); i++) {
+            answer.add((T)values.get(i));
+        }
+
+        return answer;
+    }
+
     public void add(Object value) {
         originArray.add(createUseDataFromOriginData(value));
     }
@@ -65,17 +85,17 @@ public class EUNArray extends EUNData {
     }
 
     @Override
-    public boolean remove(Integer index) {
-        return originArray.remove(index);
+    public boolean remove(int index) {
+        return originArray.remove(index) != null;
     }
 
     @Override
-    public Integer count() {
+    public int count() {
         return originArray.size();
     }
 
     @Override
-    protected <T> T get(Integer k, T defaultValue) {
+    protected <T> T get(int k, T defaultValue) {
         if (k < 0 || k > originArray.size() - 1) return defaultValue;
 
         var value = originArray.get(k);
@@ -88,21 +108,6 @@ public class EUNArray extends EUNData {
         catch (Exception ex) {
             return defaultValue;
         }
-    }
-
-//    public List<Object> toList() {
-//        return values();
-//    }
-
-    public <T> List<T> toList() {
-        var answer = new ArrayList<T>();
-
-        var values = values();
-        for (var i = 0; i < values.size(); i++) {
-            answer.add((T)values.get(i));
-        }
-
-        return answer;
     }
 
     @Override

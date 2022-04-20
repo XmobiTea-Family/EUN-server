@@ -3,57 +3,57 @@ package org.youngmonkeys.xmobitea.eun.common.entity;
 public interface IEUNData {
     void clear();
 
-    boolean remove(Integer k);
+    boolean remove(int k);
 
-    Integer count();
+    int count();
 
-    byte getByte(Integer k);
+    byte getByte(int k);
 
-    byte getByte(Integer k, byte defaultValue);
+    byte getByte(int k, byte defaultValue);
 
-    short getShort(Integer k);
+    short getShort(int k);
 
-    short getShort(Integer k, short defaultValue);
+    short getShort(int k, short defaultValue);
 
-    Integer getInt(Integer k);
+    int getInt(int k);
 
-    Integer getInt(Integer k, Integer defaultValue);
+    int getInt(int k, int defaultValue);
 
-    float getFloat(Integer k);
+    float getFloat(int k);
 
-    float getFloat(Integer k, float defaultValue);
+    float getFloat(int k, float defaultValue);
 
-    long getLong(Integer k);
+    long getLong(int k);
 
-    long getLong(Integer k, long defaultValue);
+    long getLong(int k, long defaultValue);
 
-    double getDouble(Integer k);
+    double getDouble(int k);
 
-    double getDouble(Integer k, double defaultValue);
+    double getDouble(int k, double defaultValue);
 
-    boolean getBool(Integer k);
+    boolean getBool(int k);
 
-    boolean getBool(Integer k, boolean defaultValue);
+    boolean getBool(int k, boolean defaultValue);
 
-    String getString(Integer k);
+    String getString(int k);
 
-    String getString(Integer k, String defaultValue);
+    String getString(int k, String defaultValue);
 
-    Object getObject(Integer k);
+    Object getObject(int k);
 
-    Object getObject(Integer k, Object defaultValue);
+    Object getObject(int k, Object defaultValue);
 
     //T[] GetArray<T>(int k, T[] defaultValue = null);
 
     //IList<T> GetList<T>(int k, IList<T> defaultValue = null);
 
-    EUNArray getEUNArray(Integer k);
+    EUNArray getEUNArray(int k);
 
-    EUNArray getEUNArray(Integer k, EUNArray defaultValue);
+    EUNArray getEUNArray(int k, EUNArray defaultValue);
 
-    EUNHashtable getEUNHashtable(Integer k);
+    EUNHashtable getEUNHashtable(int k);
 
-    EUNHashtable getEUNHashtable(Integer k, EUNHashtable defaultValue);
+    EUNHashtable getEUNHashtable(int k, EUNHashtable defaultValue);
 
     Object toEzyData();
 }
