@@ -121,4 +121,9 @@ public class EUNArray extends EUNData {
 
         return eunArray;
     }
+
+    @Override
+    public String toString() {
+        return this.originArray.toString();
+    }
 }

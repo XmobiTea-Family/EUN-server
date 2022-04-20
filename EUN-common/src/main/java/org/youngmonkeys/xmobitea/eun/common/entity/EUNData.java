@@ -34,11 +34,7 @@ public class EUNData implements IEUNData {
             return answer;
         }
 
-        if (value instanceof EUNHashtable) {
-            return value;
-        }
-
-        if (value instanceof EUNArray) {
+        if (value instanceof IEUNData) {
             return value;
         }
 

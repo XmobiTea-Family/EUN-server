@@ -137,11 +137,17 @@ public class EUNHashtable extends EUNData {
         var ezyObject = EzyEntityFactory.newObject();
 
         var keySet = originObject.keySet();
+
         for (var key : keySet)
         {
             ezyObject.put(key, createEUNDataFromUseData(originObject.get(key)));
         }
 
         return ezyObject;
+    }
+
+    @Override
+    public String toString() {
+        return this.originObject.toString();
     }
 }
