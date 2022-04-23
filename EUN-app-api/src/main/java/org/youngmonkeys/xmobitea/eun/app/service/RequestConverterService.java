@@ -1,6 +1,7 @@
 package org.youngmonkeys.xmobitea.eun.app.service;
 
 import com.tvd12.ezyfox.bean.annotation.EzySingleton;
+import com.tvd12.ezyfox.entity.EzyArray;
 import com.tvd12.ezyfox.entity.EzyArrayList;
 import com.tvd12.ezyfox.entity.EzyHashMap;
 import com.tvd12.ezyfox.entity.EzyObject;
@@ -12,12 +13,30 @@ import org.youngmonkeys.xmobitea.eun.common.entity.EUNArray;
 import org.youngmonkeys.xmobitea.eun.common.entity.EUNHashtable;
 import lombok.*;
 
+import java.lang.reflect.Field;
+import java.util.*;
+
 @EzySingleton
 public class RequestConverterService extends EzyLoggable implements IRequestConverterService {
+    private Map<Class, Field[]> declaredFieldsMap;
+
     @Override
     public <T extends OperationRequest> T createOperationRequest(@NonNull OperationRequest operationRequest, @NonNull Class<T> objectType) {
         try {
-            var fields = objectType.getDeclaredFields();
+            var fields = declaredFieldsMap.getOrDefault(objectType, null);
+            if (fields == null) {
+                var tempFields = objectType.getDeclaredFields();
+
+                var fieldLst = new ArrayList<Field>();
+                for (var field : tempFields) {
+                    var ann = field.getAnnotation(EzyDataMember.class);
+                    if (ann != null) fieldLst.add(field);
+                }
+
+                fields = fieldLst.toArray(new Field[0]);
+                declaredFieldsMap.put(objectType, fields);
+            }
+
             var parameters = operationRequest.getParameters();
 
             var isValidRequest = true;
@@ -26,54 +45,84 @@ public class RequestConverterService extends EzyLoggable implements IRequestConv
 
             for (var field : fields) {
                 var ann = field.getAnnotation(EzyDataMember.class);
-                if (ann != null) {
-                    if (ann.isOptional()) {
-                        var value = parameters.getObject(ann.code());
-                        if (value != null) {
-                            field.setAccessible(true);
+                if (ann.isOptional()) {
+                    var value = parameters.getObject(ann.code());
+                    if (value != null) {
+                        field.setAccessible(true);
 
-                            var fieldType = field.getType();
+                        var fieldType = field.getType();
 
-                            if (value instanceof EzyHashMap && fieldType.equals(EUNHashtable.class)) {
-                                var valueEzyHashMap = (EzyHashMap)value;
+                        if (value instanceof EzyHashMap) {
+                            var valueEzyHashMap = (EzyHashMap)value;
 
+                            if (fieldType.equals(EUNHashtable.class)) {
                                 field.set(object, new EUNHashtable.Builder().addAll(valueEzyHashMap.toMap()).build());
                             }
-                            else if (value instanceof EzyArrayList && fieldType.equals(EUNArray.class)) {
-                                var valueEzyArrayList = (EzyArrayList)value;
+                            else if (fieldType.equals(EzyObject.class)) {
+                                field.set(object, valueEzyHashMap);
+                            }
+                            else if (fieldType.equals(Map.class)) {
+                                field.set(object, valueEzyHashMap.toMap());
+                            }
+                        }
+                        else if (value instanceof EzyArrayList) {
+                            var valueEzyArrayList = (EzyArrayList)value;
 
+                            if (fieldType.equals(EUNArray.class)) {
                                 field.set(object, new EUNArray.Builder().addAll(valueEzyArrayList.toList()).build());
                             }
-                            else field.set(object, value);
+                            else if (fieldType.equals(EzyArray.class)) {
+                                field.set(object, valueEzyArrayList);
+                            }
+                            else if (fieldType.equals(Collection.class)) {
+                                field.set(object, valueEzyArrayList.toList());
+                            }
                         }
+                        else field.set(object, value);
                     }
-                    else {
-                        if (parameters.containsKey(ann.code())) {
-                            var value = parameters.getObject(ann.code());
+                }
+                else {
+                    if (parameters.containsKey(ann.code())) {
+                        var value = parameters.getObject(ann.code());
 
-                            field.setAccessible(true);
+                        field.setAccessible(true);
 
-                            if (value != null) {
-                                var fieldType = field.getType();
+                        if (value != null) {
+                            var fieldType = field.getType();
 
-                                if (value instanceof EzyHashMap && fieldType.equals(EUNHashtable.class)) {
-                                    var valueEzyHashMap = (EzyHashMap)value;
+                            if (value instanceof EzyHashMap) {
+                                var valueEzyHashMap = (EzyHashMap)value;
 
+                                if (fieldType.equals(EUNHashtable.class)) {
                                     field.set(object, new EUNHashtable.Builder().addAll(valueEzyHashMap.toMap()).build());
                                 }
-                                else if (value instanceof EzyArrayList && fieldType.equals(EUNArray.class)) {
-                                    var valueEzyArrayList = (EzyArrayList)value;
+                                else if (fieldType.equals(EzyObject.class)) {
+                                    field.set(object, valueEzyHashMap);
+                                }
+                                else if (fieldType.equals(Map.class)) {
+                                    field.set(object, valueEzyHashMap.toMap());
+                                }
+                            }
+                            else if (value instanceof EzyArrayList) {
+                                var valueEzyArrayList = (EzyArrayList)value;
 
+                                if (fieldType.equals(EUNArray.class)) {
                                     field.set(object, new EUNArray.Builder().addAll(valueEzyArrayList.toList()).build());
                                 }
-                                else field.set(object, value);
+                                else if (fieldType.equals(EzyArray.class)) {
+                                    field.set(object, valueEzyArrayList);
+                                }
+                                else if (fieldType.equals(Collection.class)) {
+                                    field.set(object, valueEzyArrayList.toList());
+                                }
                             }
                             else field.set(object, value);
                         }
-                        else {
-                            isValidRequest = false;
-                            break;
-                        }
+                        else field.set(object, null);
+                    }
+                    else {
+                        isValidRequest = false;
+                        break;
                     }
                 }
             }
@@ -109,5 +158,9 @@ public class RequestConverterService extends EzyLoggable implements IRequestConv
         }
 
         return null;
+    }
+
+    public RequestConverterService() {
+        declaredFieldsMap = new Hashtable<>();
     }
 }
