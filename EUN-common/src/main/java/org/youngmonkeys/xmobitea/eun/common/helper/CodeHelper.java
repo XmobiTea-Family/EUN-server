@@ -16,7 +16,6 @@ public final class CodeHelper {
     private static Map<Integer, String> eventCodeDic;
     private static Map<Integer, String> returnCodeDic;
 
-
     public static String getOperationCodeName(int operationCode) {
         return operationCodeDic.getOrDefault(operationCode, UnknownCode);
     }
@@ -25,8 +24,8 @@ public final class CodeHelper {
         return eventCodeDic.getOrDefault(eventCode, UnknownCode);
     }
 
-    public static String getReturnCodeName(int operationCode) {
-        return returnCodeDic.getOrDefault(operationCode, UnknownCode);
+    public static String getReturnCodeName(int returnCode) {
+        return returnCodeDic.getOrDefault(returnCode, UnknownCode);
     }
 
     CodeHelper() throws IllegalAccessException {
