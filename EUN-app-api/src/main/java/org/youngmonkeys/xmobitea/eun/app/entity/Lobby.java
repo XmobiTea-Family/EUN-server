@@ -12,12 +12,12 @@ import java.util.List;
 import java.util.Vector;
 
 public class Lobby extends EzyLoggable implements ILobby {
-    private Hashtable<String, EzyUser> peerDic;
-    private Hashtable<Integer, IRoom> roomDic;
+    private final Hashtable<String, EzyUser> peerDic;
+    private final Hashtable<Integer, IRoom> roomDic;
 
-    private int lobbyId;
+    private final int lobbyId;
 
-    private List<String> chatUserIdLst;
+    private final List<String> chatUserIdLst;
 
     @Override
     public int getLobbyId() {

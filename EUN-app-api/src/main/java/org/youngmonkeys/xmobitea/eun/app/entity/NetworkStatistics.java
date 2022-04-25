@@ -3,7 +3,7 @@ package org.youngmonkeys.xmobitea.eun.app.entity;
 import com.tvd12.ezyfoxserver.statistics.EzyNetworkRoStats;
 
 public class NetworkStatistics implements INetworkStatistics {
-    private EzyNetworkRoStats networkRoStats;
+    private final EzyNetworkRoStats networkRoStats;
 
     @Override
     public long getReadBytes() {

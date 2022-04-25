@@ -162,7 +162,6 @@ public class Room extends EzyLoggable implements IRoom {
         });
 
         if (roomPlayerLst.size() <= 0) {
-            // trong phong khong con ai nua
             lobby.removeRoom(this);
         } else {
             if (leaderClientUserId.equals(userId)) {
@@ -206,6 +205,8 @@ public class Room extends EzyLoggable implements IRoom {
         var userId = peer.getName();
 
         var roomPlayerOption = roomPlayerLst.stream().filter(x -> x.getUserId().equals(userId)).findAny();
+        if (!roomPlayerOption.isPresent()) return;
+
         var roomPlayer = roomPlayerOption.get();
 
         peer.setProperty(PeerPropertyCode.Room, this);
@@ -556,8 +557,6 @@ public class Room extends EzyLoggable implements IRoom {
         var roomPlayerOption = roomPlayerLst.stream().filter(x -> x.getUserId().equals(userId)).findAny();
         if (!roomPlayerOption.isPresent()) return false;
 
-        var roomPlayer = roomPlayerOption.get();
-
         roomGameObject.setSynchronizationData(synchronizationData);
 
         threadPool.execute(() -> {
@@ -627,9 +626,7 @@ public class Room extends EzyLoggable implements IRoom {
                 int targetPlayerId = targetPlayerIds.get(i);
                 var roomPlayerOption = roomPlayerLst.stream().filter(x -> x.getPlayerId() == targetPlayerId).findAny();
 
-                if (roomPlayerOption.isPresent()) {
-                    userService.sendEvent(roomPlayerOption.get().getUserId(), event, udpSendParameters);
-                }
+                roomPlayerOption.ifPresent(roomPlayer -> userService.sendEvent(roomPlayer.getUserId(), event, udpSendParameters));
             }
         });
 
@@ -720,18 +717,16 @@ public class Room extends EzyLoggable implements IRoom {
 
     @Override
     public Object[] toFullData() {
-        var returnRoomPlayer = new LinkedList<Object>();
-        for (var i = 0; i < roomPlayerLst.size(); i++) {
-            returnRoomPlayer.add(roomPlayerLst.get(i).toData());
+        var returnRoomPlayer = new LinkedList<>();
+        for (var roomPlayer : roomPlayerLst) {
+            returnRoomPlayer.add(roomPlayer.toData());
         }
 
         var gameObjectValues = gameObjectDic.values().iterator();
-        var returnGameObjectDic = new LinkedList<Object>();
+        var returnGameObjectDic = new LinkedList<>();
         while (gameObjectValues.hasNext()) {
             returnGameObjectDic.add(gameObjectValues.next().toData());
         }
-
-        var a = new Object[] {};
 
         return new Object[]{
                 roomId,
@@ -830,7 +825,7 @@ public class Room extends EzyLoggable implements IRoom {
 
         this.tsCreate = System.currentTimeMillis();
         this.ttl = roomOption.getTtl();
-        this.gameObjectDic = new HashMap<Integer, RoomGameObject>();
+        this.gameObjectDic = new HashMap<>();
 
         this.userService = userService;
 

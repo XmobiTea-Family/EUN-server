@@ -9,7 +9,7 @@ import java.util.Vector;
 
 @EzySingleton
 public class ChatAllService implements IChatAllService {
-    private List<String> chatUserIdLst;
+    private final List<String> chatUserIdLst;
 
     @Override
     public boolean addChatPeer(@NonNull String userId) {

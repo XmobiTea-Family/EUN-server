@@ -11,7 +11,7 @@ import java.util.Iterator;
 
 @EzySingleton
 public class LobbyService extends EzyLoggable implements ILobbyService {
-    private Hashtable<Integer, ILobby> lobbyDic;
+    private final Hashtable<Integer, ILobby> lobbyDic;
 
     @Override
     public int size() {

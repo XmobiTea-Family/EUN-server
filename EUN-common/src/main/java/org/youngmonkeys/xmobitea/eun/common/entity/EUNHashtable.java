@@ -10,7 +10,7 @@ import java.util.*;
 public class EUNHashtable extends EUNData {
     public static class Builder
     {
-        private Map<Integer, Object> originObject;
+        private final Map<Integer, Object> originObject;
 
         public Builder add(int key, Object value)
         {
@@ -33,9 +33,7 @@ public class EUNHashtable extends EUNData {
 
                         add(keyInt, map.get(key));
                     }
-                    catch (Exception ex) {
-
-                    }
+                    catch (Exception ex) { }
                 }
                 else if (key instanceof Integer)
                 {
@@ -63,11 +61,11 @@ public class EUNHashtable extends EUNData {
 
         public Builder()
         {
-            originObject = new HashMap<Integer, Object>();
+            originObject = new HashMap<>();
         }
     }
 
-    private Map<Integer, Object> originObject;
+    private final Map<Integer, Object> originObject;
 
     public EUNHashtable() {
         originObject = new HashMap<>();

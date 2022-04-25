@@ -18,7 +18,7 @@ import java.util.*;
 
 @EzySingleton
 public class RequestConverterService extends EzyLoggable implements IRequestConverterService {
-    private Map<Class, Field[]> declaredFieldsMap;
+    private final Map<Class, Field[]> declaredFieldsMap;
 
     @Override
     public <T extends OperationRequest> T createOperationRequest(@NonNull OperationRequest operationRequest, @NonNull Class<T> objectType) {

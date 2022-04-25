@@ -8,17 +8,15 @@ import java.time.LocalTime;
 import java.util.List;
 import java.util.Vector;
 import java.util.concurrent.Executors;
-import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 
 @EzySingleton
 public class TimerService extends EzyLoggable implements ITimerService {
-    private ScheduledExecutorService threadPool;
 
-    private List<Runnable> everySecondRunnableLst;
-    private List<Runnable> everyMinuteRunnableLst;
-    private List<Runnable> everyHourRunnableLst;
-    private List<Runnable> everyDayRunnableLst;
+    private final List<Runnable> everySecondRunnableLst;
+    private final List<Runnable> everyMinuteRunnableLst;
+    private final List<Runnable> everyHourRunnableLst;
+    private final List<Runnable> everyDayRunnableLst;
 
     private void handle() {
         var now = LocalTime.now();
@@ -70,14 +68,14 @@ public class TimerService extends EzyLoggable implements ITimerService {
     }
 
     public TimerService() {
-        threadPool = Executors.newSingleThreadScheduledExecutor();
+        var threadPool = Executors.newSingleThreadScheduledExecutor();
 
         everySecondRunnableLst = new Vector<>();
         everyMinuteRunnableLst = new Vector<>();
         everyHourRunnableLst = new Vector<>();
         everyDayRunnableLst = new Vector<>();
 
-        threadPool.scheduleAtFixedRate(() -> handle(), 500, 1000, TimeUnit.MILLISECONDS);
+        threadPool.scheduleAtFixedRate(this::handle, 500, 1000, TimeUnit.MILLISECONDS);
     }
 
     @Override
@@ -86,7 +84,7 @@ public class TimerService extends EzyLoggable implements ITimerService {
     }
 
     @Override
-    public void unSbscriberEverySecond(Runnable runnable) {
+    public void unSubscriberEverySecond(Runnable runnable) {
         everySecondRunnableLst.remove(runnable);
     }
 

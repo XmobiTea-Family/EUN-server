@@ -16,7 +16,7 @@ public class DisconnectRoomService extends EzyLoggable implements IDisconnectRoo
     @EzyAutoBind
     private ITimerService timerService;
 
-    private Hashtable<String, DisconnectRoomInfo> disconnectRoomDic;
+    private final Hashtable<String, DisconnectRoomInfo> disconnectRoomDic;
 
     @Override
     public boolean addDisconnectRoom(@NonNull String userId, @NonNull DisconnectRoomInfo disconnectRoomInfo) {
@@ -66,6 +66,6 @@ public class DisconnectRoomService extends EzyLoggable implements IDisconnectRoo
 
     @Override
     public void config() {
-        timerService.subscriberEverySecond(() -> onEverySecond());
+        timerService.subscriberEverySecond(this::onEverySecond);
     }
 }

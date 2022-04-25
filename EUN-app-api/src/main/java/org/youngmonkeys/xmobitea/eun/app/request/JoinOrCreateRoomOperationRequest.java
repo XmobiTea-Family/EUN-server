@@ -6,8 +6,6 @@ import org.youngmonkeys.xmobitea.eun.common.constant.ParameterCode;
 import org.youngmonkeys.xmobitea.eun.common.entity.EUNArray;
 import org.youngmonkeys.xmobitea.eun.common.entity.EUNHashtable;
 
-import java.util.List;
-
 @Data
 public class JoinOrCreateRoomOperationRequest extends OperationRequest {
     @EzyDataMember(code = ParameterCode.MaxPlayer)

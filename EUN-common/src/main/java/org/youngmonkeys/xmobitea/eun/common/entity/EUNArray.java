@@ -11,7 +11,7 @@ import java.util.List;
 @EzyObjectBinding
 public class EUNArray extends EUNData {
     public static class Builder {
-        private Collection<Object> originArray;
+        private final Collection<Object> originArray;
 
         public Builder add(Object value) {
             originArray.add(value);
@@ -50,7 +50,7 @@ public class EUNArray extends EUNData {
         }
     }
 
-    private List<Object> originArray;
+    private final List<Object> originArray;
 
     public EUNArray() {
         this.originArray = new ArrayList<>();

@@ -3,7 +3,7 @@ package org.youngmonkeys.xmobitea.eun.app.service;
 public interface ITimerService {
     void subscriberEverySecond(Runnable runnable);
 
-    void unSbscriberEverySecond(Runnable runnable);
+    void unSubscriberEverySecond(Runnable runnable);
 
     void subscriberEveryMinute(Runnable runnable);
 
