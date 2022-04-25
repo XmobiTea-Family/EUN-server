@@ -1,5 +1,7 @@
 package org.youngmonkeys.xmobitea.eun.common.helper;
 
+import com.tvd12.ezyfox.bean.annotation.EzySingleton;
+import com.tvd12.ezyfox.util.EzyLoggable;
 import lombok.var;
 import org.youngmonkeys.xmobitea.eun.common.constant.EventCode;
 import org.youngmonkeys.xmobitea.eun.common.constant.OperationCode;
@@ -9,7 +11,8 @@ import java.lang.reflect.Modifier;
 import java.util.HashMap;
 import java.util.Map;
 
-public final class CodeHelper {
+@EzySingleton
+public class CodeHelper {
     private static final String UnknownCode = "Unknown";
 
     private static Map<Integer, String> operationCodeDic;
@@ -28,7 +31,7 @@ public final class CodeHelper {
         return returnCodeDic.getOrDefault(returnCode, UnknownCode);
     }
 
-    CodeHelper() throws IllegalAccessException {
+    public CodeHelper() throws IllegalAccessException {
         setOperationCodeDic();
         setEventCodeDic();
         setReturnCodeDic();

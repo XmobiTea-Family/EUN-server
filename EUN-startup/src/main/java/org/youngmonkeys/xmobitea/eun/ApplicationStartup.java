@@ -17,7 +17,7 @@ import org.youngmonkeys.xmobitea.eun.app.AppEntryLoader;
 
 public class ApplicationStartup {
 	
-	public static final String ZONE_NAME = "EUN";
+	public static final String ZONE_NAME = "EUN Zone";
 	public static final String APP_NAME = "EUN";
 	public static final String PLUGIN_NAME = "EUN";
 

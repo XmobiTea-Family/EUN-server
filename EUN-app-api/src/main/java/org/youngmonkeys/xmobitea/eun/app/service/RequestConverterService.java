@@ -5,6 +5,7 @@ import com.tvd12.ezyfox.entity.EzyArray;
 import com.tvd12.ezyfox.entity.EzyArrayList;
 import com.tvd12.ezyfox.entity.EzyHashMap;
 import com.tvd12.ezyfox.entity.EzyObject;
+import com.tvd12.ezyfox.factory.EzyEntityFactory;
 import com.tvd12.ezyfox.util.EzyLoggable;
 import org.youngmonkeys.xmobitea.eun.app.entity.EzyDataMember;
 import org.youngmonkeys.xmobitea.eun.app.request.OperationRequest;
@@ -41,7 +42,7 @@ public class RequestConverterService extends EzyLoggable implements IRequestConv
 
             var isValidRequest = true;
 
-            var object = objectType.newInstance();
+            var object = objectType.getDeclaredConstructor().newInstance();
 
             for (var field : fields) {
                 var ann = field.getAnnotation(EzyDataMember.class);
@@ -149,7 +150,14 @@ public class RequestConverterService extends EzyLoggable implements IRequestConv
             var data = request.getData();
             operationRequest.setOperationCode(data.get(0));
 
-            operationRequest.setParameters(data.size() > 1 ?  new EUNHashtable.Builder().addAll(data.get(1, EzyObject.class).toMap()).build() : new EUNHashtable());
+            if (data.size() > 1) {
+                var data1 = data.get(1, EzyObject.class);
+                operationRequest.setParameters(data1 == null ? new EUNHashtable() : new EUNHashtable.Builder().addAll(data1.toMap()).build());
+            }
+            else {
+                operationRequest.setParameters(new EUNHashtable());
+            }
+
             operationRequest.setRequestId(data.size() > 2 ? data.get(2) : -1);
 
             return operationRequest;
