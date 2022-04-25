@@ -11,7 +11,6 @@ import org.youngmonkeys.xmobitea.eun.app.controller.handler.base.RoomRequestHand
 import org.youngmonkeys.xmobitea.eun.common.constant.OperationCode;
 import org.youngmonkeys.xmobitea.eun.common.constant.ParameterCode;
 import org.youngmonkeys.xmobitea.eun.common.constant.ReturnCode;
-import org.youngmonkeys.xmobitea.eun.common.entity.EUNHashtable;
 
 @EzySingleton
 public class ChangeRoomInfoRequestHandler extends RoomRequestHandler {

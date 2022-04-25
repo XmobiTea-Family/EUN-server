@@ -17,7 +17,7 @@ import org.youngmonkeys.xmobitea.eun.app.AppEntryLoader;
 
 public class ApplicationStartup {
 	
-	public static final String ZONE_NAME = "EUN";
+	public static final String ZONE_NAME = "EUN Zone";
 	public static final String APP_NAME = "EUN";
 	public static final String PLUGIN_NAME = "EUN";
 
@@ -59,8 +59,7 @@ public class ApplicationStartup {
 				.active(true)
 				.port(22611)
 				.address("0.0.0.0")
-				.maxRequestSize(2048)
-				;
+				.maxRequestSize(2048);
 
 		EzySocketSettingBuilder socketBuilder = new EzySocketSettingBuilder()
 				.active(true)

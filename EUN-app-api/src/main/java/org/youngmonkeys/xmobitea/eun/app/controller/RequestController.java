@@ -35,9 +35,9 @@ public final class RequestController extends EzyLoggable implements IWaitForEzyI
     @EzyAutoBind
     private IRequestConverterService requestConverterService;
 
-    private Map<Integer, IRequestHandler> requestHandlerDic;
+    private final Map<Integer, IRequestHandler> requestHandlerDic;
 
-    private ExecutorService threadPool;
+    private final ExecutorService threadPool;
 
     @EzyDoHandle(Commands.RequestCmd)
     public void handleRequest(Request request, EzyUser peer) {
@@ -46,7 +46,7 @@ public final class RequestController extends EzyLoggable implements IWaitForEzyI
             if (operationRequest == null) return;
 
             if (operationRequest.getRequestId() != -1) {
-                logger.info("[RECV] " + operationRequest.toString());
+                logger.info("[RECV] " + operationRequest);
             }
 
             var requestHandler = getRequestHandler(operationRequest.getOperationCode());

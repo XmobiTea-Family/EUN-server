@@ -97,8 +97,7 @@ public class JoinOrCreateRoomRequestHandler extends RoomRequestHandler {
 
                     if (expectedValue == null && roomValue == null) conditionTrueCount++;
                     else {
-                        if (expectedValue == null) { }
-                        else {
+                        if (expectedValue != null) {
                             if (expectedValue.equals(roomValue)) {
                                 conditionTrueCount++;
                             }

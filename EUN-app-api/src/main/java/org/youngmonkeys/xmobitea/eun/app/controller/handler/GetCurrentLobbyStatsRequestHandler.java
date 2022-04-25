@@ -34,7 +34,7 @@ public class GetCurrentLobbyStatsRequestHandler extends LobbyRequestHandler {
 
         var currentLobby = getCurrentLobbyPeer(peer);
 
-        var returnRoomLst = new LinkedList<Object>();
+        var returnRoomLst = new LinkedList<>();
         var roomIterator = currentLobby.getRoomIterator();
         while (roomIterator.hasNext()) {
             var room = roomIterator.next();

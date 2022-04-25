@@ -9,4 +9,3 @@ import lombok.Data;
 public class AppConfig {
 
 }
-

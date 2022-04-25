@@ -32,7 +32,7 @@ public class GetLobbyStatsLstRequestHandler extends LobbyRequestHandler {
         var skip = request.getSkip();
         var limit = request.getLimit();
 
-        var returnLobbyLst = new LinkedList<Object>();
+        var returnLobbyLst = new LinkedList<>();
         var lobbyLst = lobbyService.getLobbyLst();
 
         while (lobbyLst.hasNext()) {

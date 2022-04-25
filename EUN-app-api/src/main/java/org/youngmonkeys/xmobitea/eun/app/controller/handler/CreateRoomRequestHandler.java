@@ -15,8 +15,6 @@ import org.youngmonkeys.xmobitea.eun.common.entity.EUNArray;
 import org.youngmonkeys.xmobitea.eun.common.entity.EUNHashtable;
 import org.youngmonkeys.xmobitea.eun.common.entity.RoomOption;
 
-import java.util.Vector;
-
 @EzySingleton
 public class CreateRoomRequestHandler extends RoomRequestHandler {
     @Override
