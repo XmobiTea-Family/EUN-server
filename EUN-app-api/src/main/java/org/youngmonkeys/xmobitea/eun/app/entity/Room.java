@@ -146,8 +146,8 @@ public class Room extends EzyLoggable implements IRoom {
                 peer.removeProperty(PeerPropertyCode.RoomPlayer);
 
                 threadPool.execute(() -> {
-                    var onPlayerJoinRoomEvent = new OperationEvent(EventCode.OnLeftRoom);
-                    userService.sendEvent(peer, onPlayerJoinRoomEvent);
+                    var onLeftRoomEvent = new OperationEvent(EventCode.OnLeftRoom);
+                    userService.sendEvent(peer, onLeftRoomEvent);
                 });
             }
         }
@@ -247,12 +247,12 @@ public class Room extends EzyLoggable implements IRoom {
         this.leaderClientUserId = newLeaderClientUserId;
 
         threadPool.execute(() -> {
-            var onPlayerJoinRoomEvent = new OperationEvent(EventCode.OnLeaderClientChange);
-            var playerJoinRoomParameters = new EUNHashtable();
-            playerJoinRoomParameters.add(ParameterCode.Data, newLeaderClient.toData());
-            onPlayerJoinRoomEvent.setParameters(playerJoinRoomParameters);
+            var onLeaderClientChangeEvent = new OperationEvent(EventCode.OnLeaderClientChange);
+            var leaderClientChangeParameters = new EUNHashtable();
+            leaderClientChangeParameters.add(ParameterCode.Data, newLeaderClient.toData());
+            onLeaderClientChangeEvent.setParameters(leaderClientChangeParameters);
 
-            userService.sendEventToSomePeerByUserIds(getUserIdIterator(-1), onPlayerJoinRoomEvent);
+            userService.sendEventToSomePeerByUserIds(getUserIdIterator(-1), onLeaderClientChangeEvent);
         });
 
         return true;
