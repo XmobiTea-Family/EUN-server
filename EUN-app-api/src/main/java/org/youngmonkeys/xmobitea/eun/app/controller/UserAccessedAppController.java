@@ -10,10 +10,10 @@ import lombok.var;
 import org.youngmonkeys.xmobitea.eun.app.service.IDisconnectRoomService;
 import org.youngmonkeys.xmobitea.eun.common.constant.PeerPropertyCode;
 
-import static com.tvd12.ezyfoxserver.constant.EzyEventType.USER_ACCESSED_APP;
+import static com.tvd12.ezyfoxserver.constant.EzyEventNames.USER_ACCESSED_APP;
 
 @EzySingleton
-@EzyEventHandler("USER_ACCESSED_APP") // refer EzyEventType
+@EzyEventHandler(USER_ACCESSED_APP) // refer EzyEventType
 public class UserAccessedAppController
         extends EzyAbstractAppEventController<EzyUserAccessedAppEvent> {
 

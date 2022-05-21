@@ -22,8 +22,8 @@
 
 	<applications>
 		<application>
-			<name>EUN</name>
-			<max-users>30</max-users>
+			<name>EUN App</name>
+			<max-users>100</max-users>
 			<folder>EUN-app-entry</folder>
 			<entry-loader>org.youngmonkeys.xmobitea.eun.app.AppEntryLoader</entry-loader>
 			<config-file>config/config.properties</config-file>
@@ -32,7 +32,7 @@
 
 	<plugins>
 		<plugin>
-			<name>EUN</name>
+			<name>EUN App</name>
 			<folder>EUN-plugin</folder>
 			<priority>-1</priority>
 			<entry-loader>org.youngmonkeys.xmobitea.eun.plugin.PluginEntryLoader</entry-loader>
