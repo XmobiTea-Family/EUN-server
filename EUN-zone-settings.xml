@@ -1,45 +1,44 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <settings
-	xsi:schemaLocation="http://www.tvd12.com/schema/ezyfox/settings
+		xsi:schemaLocation="http://www.tvd12.com/schema/ezyfox/settings
   		ezy-zone-settings-1.0.0.xsd"
-	xmlns="http://www.tvd12.com/schema/ezyfox/settings" 
-	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
-	
+		xmlns="http://www.tvd12.com/schema/ezyfox/settings"
+		xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+
 	<max-users>100</max-users>
-    
-    <streaming>
-        <enable>true</enable>
-    </streaming>
-	
+
+	<streaming>
+		<enable>true</enable>
+	</streaming>
+
 	<user-management>
 		<allow-guest-login>true</allow-guest-login>
 		<guest-name-prefix>Guest#</guest-name-prefix>
-		<user-max-idle-time>15</user-max-idle-time>
+		<user-max-idle-time>1</user-max-idle-time>
 		<max-session-per-user>1</max-session-per-user>
 		<allow-change-session>true</allow-change-session>
 		<user-name-pattern>^[a-zA-Z0-9_.#]{10,36}$</user-name-pattern>
 	</user-management>
-	
+
 	<applications>
-        <application>
+		<application>
 			<name>EUN</name>
+			<max-users>30</max-users>
 			<folder>EUN-app-entry</folder>
-			<entry-loader>org.youngmonkeys.eun.app.AppEntryLoader</entry-loader>
+			<entry-loader>org.youngmonkeys.xmobitea.eun.app.AppEntryLoader</entry-loader>
 			<config-file>config/config.properties</config-file>
 		</application>
 	</applications>
-	
+
 	<plugins>
-        <plugin>
+		<plugin>
 			<name>EUN</name>
 			<folder>EUN-plugin</folder>
 			<priority>-1</priority>
-			<entry-loader>org.youngmonkeys.eun.plugin.PluginEntryLoader</entry-loader>
+			<entry-loader>org.youngmonkeys.xmobitea.eun.plugin.PluginEntryLoader</entry-loader>
 			<config-file>config/config.properties</config-file>
 			<listen-events>
 				<event>USER_LOGIN</event>
-				<event>USER_ADDED</event>
-				<event>USER_REMOVED</event>
 			</listen-events>
 		</plugin>
 	</plugins>
