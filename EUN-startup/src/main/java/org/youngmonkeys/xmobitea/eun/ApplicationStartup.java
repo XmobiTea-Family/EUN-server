@@ -66,9 +66,13 @@ public class ApplicationStartup {
 				.port(23005)
 				.maxRequestSize(2048);
 
+		EzySimpleSessionManagementSetting.EzySimpleMaxRequestPerSecond ezySimpleMaxRequestPerSecond = new EzySimpleSessionManagementSetting.EzySimpleMaxRequestPerSecond();
+		ezySimpleMaxRequestPerSecond.setValue(40);
+
 		EzySimpleSessionManagementSetting sessionManagement = new EzySessionManagementSettingBuilder()
 				.sessionMaxIdleTimeInSecond(15)
 				.sessionMaxWaitingTimeInSecond(15)
+				.sessionMaxRequestPerSecond(ezySimpleMaxRequestPerSecond)
 				.build();
 		sessionManagement.init();
 
