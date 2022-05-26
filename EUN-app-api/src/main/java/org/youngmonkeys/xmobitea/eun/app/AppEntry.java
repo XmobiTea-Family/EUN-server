@@ -11,6 +11,7 @@ import com.tvd12.ezyfoxserver.support.entry.EzyDefaultAppEntry;
 import org.youngmonkeys.xmobitea.eun.common.constant.CommonConstants;
 
 public class AppEntry extends EzyDefaultAppEntry {
+	public final static String EUN_Version = "1.2.1";
 
 	@Override
 	protected void preConfig(EzyAppContext ctx) {
@@ -30,7 +31,7 @@ public class AppEntry extends EzyDefaultAppEntry {
 		builder.addProperties("EUN-common-config.properties");
 		builder.addProperties(pluginProperties);
 		builder.addProperties(getConfigFile(setting));
-		// The line below will be removed when ezyfox-server is updated to version 1.2.1
+		// The line below will be removed when ezyfox-server is updated to version 1.2.3
 		builder.scan(getScanablePackages());
 		Properties properties = builder.getProperties();
 	}

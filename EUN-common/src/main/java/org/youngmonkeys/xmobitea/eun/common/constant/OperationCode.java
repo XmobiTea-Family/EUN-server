@@ -24,10 +24,11 @@ public final class OperationCode {
     public static final int CreateGameObjectRoom = 18;
     public static final int DestroyGameObjectRoom = 19;
     public static final int SynchronizationDataGameObjectRoom = 20;
-    public static final int TransferGameObjectRoom = 21;
+    public static final int TransferOwnerGameObjectRoom = 21;
     public static final int VoiceChat = 22;
     public static final int RpcGameObjectRoomTo = 23;
     public static final int ChangeGameObjectCustomProperties = 24;
+    public static final int JoinRandomRoom = 25;
 
     private OperationCode() {}
 }
