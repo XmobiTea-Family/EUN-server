@@ -270,7 +270,7 @@ public class Room extends EzyLoggable implements IRoom {
 
     @Override
     public boolean setCustomRoomProperties(EzyUser peer, EUNHashtable customRoomProperties) {
-        if (!isLeaderClient(peer)) return false;
+        // if (!isLeaderClient(peer)) return false;
 
         var keySet = customRoomProperties.keySet();
         for (var key : keySet) {
@@ -589,7 +589,7 @@ public class Room extends EzyLoggable implements IRoom {
             });
             event.setParameters(eventParameters);
 
-            if (ezyTargets == EzyTargets.Others) {
+            if (ezyTargets == EzyTargets.Others || ezyTargets == EzyTargets.All) {
                 var userId = peer.getName();
 
                 userService.sendEventToSomePeerByUserIds(getUserIdIterable(userId), event, udpSendParameters);

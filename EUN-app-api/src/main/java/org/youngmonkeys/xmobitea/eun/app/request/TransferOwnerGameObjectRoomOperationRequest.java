@@ -5,7 +5,7 @@ import org.youngmonkeys.xmobitea.eun.app.entity.EzyDataMember;
 import org.youngmonkeys.xmobitea.eun.common.constant.ParameterCode;
 
 @Data
-public class TransferGameObjectRoomOperationRequest extends OperationRequest {
+public class TransferOwnerGameObjectRoomOperationRequest extends OperationRequest {
     @EzyDataMember(code = ParameterCode.ObjectId)
     int objectId;
 
