@@ -44,8 +44,7 @@ public class ChatLobbyRequestHandler extends LobbyRequestHandler {
         var parameters = new EUNHashtable();
         parameters.add(ParameterCode.Message, new Object[] {
                 userId,
-                message,
-                System.currentTimeMillis()
+                message
         });
         onChatLobbyEvent.setParameters(parameters);
 

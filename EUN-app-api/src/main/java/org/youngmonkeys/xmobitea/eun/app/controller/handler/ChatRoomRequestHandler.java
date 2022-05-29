@@ -50,8 +50,7 @@ public class ChatRoomRequestHandler  extends RoomRequestHandler {
         var parameters = new EUNHashtable();
         parameters.add(ParameterCode.Message, new Object[] {
                 userId,
-                message,
-                System.currentTimeMillis()
+                message
         });
         onChatRoomEvent.setParameters(parameters);
 

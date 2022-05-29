@@ -589,7 +589,7 @@ public class Room extends EzyLoggable implements IRoom {
             });
             event.setParameters(eventParameters);
 
-            if (ezyTargets == EzyTargets.Others) {
+            if (ezyTargets == EzyTargets.Others || ezyTargets == EzyTargets.All) {
                 var userId = peer.getName();
 
                 userService.sendEventToSomePeerByUserIds(getUserIdIterable(userId), event, udpSendParameters);

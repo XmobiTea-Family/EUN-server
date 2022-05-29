@@ -46,8 +46,7 @@ public class ChatAllRequestHandler extends RequestHandler {
         var parameters = new EUNHashtable();
         parameters.add(ParameterCode.Message, new Object[] {
                 userId,
-                message,
-                System.currentTimeMillis()
+                message
         });
         onChatAllEvent.setParameters(parameters);
 
