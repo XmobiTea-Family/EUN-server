@@ -130,7 +130,7 @@ public class RequestConverterService extends EzyLoggable implements IRequestConv
 
             object.setOperationCode(operationRequest.getOperationCode());
             object.setRequestId(operationRequest.getRequestId());
-            object.setParameters(operationRequest.getParameters());
+            object.setParameters(parameters);
 
             object.setValid(isValidRequest);
             return object;

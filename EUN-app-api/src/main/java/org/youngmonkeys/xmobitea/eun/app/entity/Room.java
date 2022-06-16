@@ -576,8 +576,8 @@ public class Room extends EzyLoggable implements IRoom {
 
     @Override
     public boolean rpcGameObject(EzyUser peer, int objectId, int eunRPCCommand, Object rpcData, int ezyTargets) {
-        var roomGameObject = gameObjectDic.getOrDefault(objectId, null);
-        if (roomGameObject == null) return false;
+//        var roomGameObject = gameObjectDic.getOrDefault(objectId, null);
+//        if (roomGameObject == null) return false;
 
         threadPool.execute(() -> {
             var event = new OperationEvent(EventCode.OnRpcGameObject);
@@ -609,8 +609,8 @@ public class Room extends EzyLoggable implements IRoom {
 
     @Override
     public boolean rpcGameObjectTo(EzyUser peer, int objectId, int eunRPCCommand, Object rpcData, EzyArray targetPlayerIds) {
-        var roomGameObject = gameObjectDic.getOrDefault(objectId, null);
-        if (roomGameObject == null) return false;
+//        var roomGameObject = gameObjectDic.getOrDefault(objectId, null);
+//        if (roomGameObject == null) return false;
 
         threadPool.execute(() -> {
             var event = new OperationEvent(EventCode.OnRpcGameObject);
